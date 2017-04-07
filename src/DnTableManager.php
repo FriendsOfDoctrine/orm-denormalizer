@@ -82,7 +82,9 @@ class DnTableManager
         foreach ($classRelation as $field => $relationClass) {
             if ($firstClass !== $relationClass) {
                 $relation[$firstClass][$field] = $relationClass;
-                $relation += $this->getEntityGroupSchema($relationClass, $classesRelation[$relationClass], $classesRelation);
+                if (isset($classesRelation[$relationClass])) {
+                    $relation += $this->getEntityGroupSchema($relationClass, $classesRelation[$relationClass], $classesRelation);
+                }
             }
         }
 
@@ -111,9 +113,10 @@ class DnTableManager
         foreach (array_filter($group, function ($key) use ($dependsEntities) {
             return !in_array($key, $dependsEntities, true);
         }, ARRAY_FILTER_USE_KEY) as $firstEntityName => $mappingEntities) {
-            $dnTableGroup = new DnTableGroup($this->getEntityGroupSchema($firstEntityName, $group[$firstEntityName], $group), $this->classesMetadata);
-
-            $this->dnTableGroups[] = $dnTableGroup;
+            if (isset($group[$firstEntityName])) {
+                $dnTableGroup = new DnTableGroup($this->getEntityGroupSchema($firstEntityName, $group[$firstEntityName], $group), $this->classesMetadata);
+                $this->dnTableGroups[] = $dnTableGroup;
+            }
         }
 
         return $this;
