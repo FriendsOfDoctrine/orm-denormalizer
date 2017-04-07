@@ -5,7 +5,33 @@ denormalized doctrine ORM entities
 use Argayash\DenormalizedOrm\Mapping\Annotation as DENORM;
 ```
 #### @DENORM\DnTable
-use annotation for Class if you want for denormalize annotated entities
+use this annotation for entity Class
+```php
+/**
+ * DBuilding
+ *
+ * @ORM\Table(name="denorm_d_building")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\Denorm\DBuildingRepository")
+ * @DENORM\DnTable
+ */
+class DBuilding
+{
+...
+
+
+/**
+ * DSchool
+ *
+ * @ORM\Table(name="denorm_d_school")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\Denorm\DSchoolRepository")
+ * @DENORM\DnTable
+ */
+class DSchool
+{
+...
+
+
+```
 
 ### Symfony example
 register service:
@@ -24,7 +50,7 @@ register service:
         class: AppBundle\DenormalizedOrm\DnTableManager
         arguments: ['@doctrine.orm.entity_manager', '@denorm.class_metadata_factory.annotation']
 ```
-console command for scan and create all denormalized entities
+example console command for scan and create all denormalized entities
 ```php
 <?php
 namespace AppBundle\Command;
