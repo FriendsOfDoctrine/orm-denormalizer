@@ -114,7 +114,7 @@ class DnTableManager
             return !in_array($key, $dependsEntities, true);
         }, ARRAY_FILTER_USE_KEY) as $firstEntityName => $mappingEntities) {
             if (isset($group[$firstEntityName])) {
-                $dnTableGroup = new DnTableGroup($this->getEntityGroupSchema($firstEntityName, $group[$firstEntityName], $group), $this->classesMetadata);
+                $dnTableGroup = new DnTableGroup($this->getEntityGroupSchema($firstEntityName, $group[$firstEntityName], $group), $this->classesMetadata, $this->dnClassesMetadata);
                 $this->dnTableGroups[] = $dnTableGroup;
             }
         }

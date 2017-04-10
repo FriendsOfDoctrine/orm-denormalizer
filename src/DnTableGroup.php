@@ -3,6 +3,7 @@ namespace Argayash\DenormalizedOrm;
 
 
 use Argayash\DenormalizedOrm\Mapping\Annotation\DnTable;
+use Argayash\DenormalizedOrm\Mapping\DnClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -29,18 +30,27 @@ class DnTableGroup
      */
     protected $indexes = [];
 
+    /**
+     * @var DnClassMetadata[]
+     */
+    protected $dnClassMetadata = [];
+    /**
+     * @var bool
+     */
     protected $isSetIndex = false;
 
     /**
      * DnTableGroup constructor.
      *
      * @param array $structureSchema
-     * @param array $classMetadata
+     * @param ClassMetadata[] $classMetadata
+     * @param DnClassMetadata[] $dnClassMetadata
      */
-    public function __construct(array $structureSchema, array $classMetadata)
+    public function __construct(array $structureSchema, array $classMetadata, array $dnClassMetadata)
     {
         $this->classMetadata = $classMetadata;
         $this->structureSchema = $structureSchema;
+        $this->dnClassMetadata = $dnClassMetadata;
     }
 
     /**
@@ -73,12 +83,12 @@ class DnTableGroup
         $tableName = [];
 
         foreach ($this->structureSchema as $entityClass => $entityJoins) {
-            if ($classMetadata = $this->getClassMetadataByName($entityClass)) {
-                $tableName[] = $classMetadata->table['name'];
+            if (($classMetadata = $this->getClassMetadataByName($entityClass)) && ($dnClassMetadata = $this->getDnClassMetadataByName($entityClass))) {
+                $tableName[] = $dnClassMetadata->getTable()->name ?: $classMetadata->reflClass->getShortName();
 
                 foreach ($entityJoins as $joinKey => $entityJoin) {
-                    if ($classMetadata = $this->getClassMetadataByName($entityJoin)) {
-                        $tableName[] = $joinKey . DnTable::DENORMALIZE_FIELD_DELIMITER . $classMetadata->table['name'];
+                    if (($classMetadata = $this->getClassMetadataByName($entityJoin)) && ($dnClassMetadata = $this->getDnClassMetadataByName($entityJoin))) {
+                        $tableName[] = $joinKey . DnTable::DENORMALIZE_FIELD_DELIMITER . ($dnClassMetadata->getTable()->name ?: $classMetadata->reflClass->getShortName());
                     }
                 }
             }
@@ -145,5 +155,15 @@ class DnTableGroup
     protected function getClassMetadataByName(string $className)
     {
         return $this->classMetadata[$className]??null;
+    }
+
+    /**
+     * @param string $className
+     *
+     * @return DnClassMetadata|null
+     */
+    protected function getDnClassMetadataByName(string $className)
+    {
+        return $this->dnClassMetadata[$className]??null;
     }
 }
