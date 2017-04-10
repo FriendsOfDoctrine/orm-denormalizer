@@ -105,10 +105,10 @@ class DnTableGroup
         foreach ($this->structureSchema as $entityClass => $entityJoins) {
             if ($classMetadata = $this->getClassMetadataByName($entityClass)) {
                 $columnPrefix = $classMetadata->getReflectionClass()->getShortName();
-                $this->getColumnsOfClassMetadata($columnPrefix, $classMetadata);
+                $this->getColumnsOfClassMetadata($columnPrefix, $classMetadata, $this->getDnClassMetadataByName($entityClass));
                 foreach ($entityJoins as $joinKey => $entityJoin) {
                     if ($classMetadata = $this->getClassMetadataByName($entityJoin)) {
-                        $this->getColumnsOfClassMetadata($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $joinKey, $classMetadata);
+                        $this->getColumnsOfClassMetadata($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $joinKey, $classMetadata, $this->getDnClassMetadataByName($entityJoin));
                     }
                 }
             }
@@ -128,18 +128,20 @@ class DnTableGroup
     /**
      * @param string $columnPrefix
      * @param ClassMetadata $classMetadata
+     * @param DnClassMetadata $dnClassMetadata
      *
      * @return $this
      */
-    protected function getColumnsOfClassMetadata(string $columnPrefix, ClassMetadata $classMetadata)
+    protected function getColumnsOfClassMetadata(string $columnPrefix, ClassMetadata $classMetadata, DnClassMetadata $dnClassMetadata)
     {
-
         foreach ($classMetadata->fieldMappings as $fieldName => $field) {
-            $dnColumn = new DnColumn($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $fieldName, $field, $classMetadata->name, $fieldName);
-            if (!$this->isSetIndex && isset($field['id']) && $field['id']) {
-                $this->indexes[] = $dnColumn->getName();
+            if (!in_array($fieldName, (array)$dnClassMetadata->getTable()->excludeFields, true)) {
+                $dnColumn = new DnColumn($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $fieldName, $field, $classMetadata->name, $fieldName);
+                if (!$this->isSetIndex && isset($field['id']) && $field['id']) {
+                    $this->indexes[] = $dnColumn->getName();
+                }
+                $this->columns[] = $dnColumn;
             }
-            $this->columns[] = $dnColumn;
         }
 
         $this->isSetIndex = true;

@@ -30,8 +30,12 @@ class DSchool
 {
 ...
 
-
 ```
+Optional attributes:
+
+`name` - specific table part name in new generated denormalized table
+`excludeFields` - array of entity field names that will not be processed
+
 
 ### Symfony example
 register service:
@@ -55,9 +59,9 @@ example console command for scan and create all denormalized entities
 <?php
 namespace AppBundle\Command;
 
-
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -71,16 +75,30 @@ class DenormalizedOrmCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('app:denormalize-table')
-            ->setHelp('create denormalized table');
+            ->setName('app:generate-denormalize-tables')
+            ->setHelp('Generate and execute SQL for create denormalized tables')
+            ->addArgument('connectionName', InputArgument::OPTIONAL, 'Connection name');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dnTableManager = $this->getContainer()->get('denorm.table_manager');
 
+        $connectionName = $input->getArgument('connectionName') ?: 'default';
+
+        $output->writeln([
+            '<info>Start console command for create denormalized Doctrine entities</info>',
+            '<info>use `' . $connectionName . '` connection</info>'
+        ]);
+        try {
+            $connection = $this->getContainer()->get('doctrine.dbal.' . $connectionName . '_connection');
+        } catch (\Exception $exception) {
+            $connection = $this->getContainer()->get('database_connection');
+        }
+
         foreach ($dnTableManager->getDnTableGroups() as $dnTableGroup) {
-            $dnTableManager->createTable($dnTableGroup);
+            $output->writeln(['Create table: ' . $dnTableGroup->getTableName()]);
+            $dnTableManager->createTable($dnTableGroup, $connection);
         }
     }
 }
