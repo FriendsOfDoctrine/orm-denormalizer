@@ -2,6 +2,7 @@
 namespace Argayash\DenormalizedOrm\Mapping;
 
 use Argayash\DenormalizedOrm\Mapping\Driver\DriverInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * This class provides method to load entity class metadata.
@@ -27,23 +28,19 @@ class DnClassMetadataFactory
     }
 
     /**
-     * @param $className
+     * @param ClassMetadata $ormClassMetadata
      *
      * @return DnClassMetadata|mixed|null
      * @throws \Exception
      */
-    public function loadMetadata($className)
+    public function loadMetadata(ClassMetadata $ormClassMetadata)
     {
         $classMetadata = null;
 
-        if (!class_exists($className)) {
-            throw new \Exception(sprintf('Class "%s" does not exists.', $className));
+        if (!array_key_exists($ormClassMetadata->name, $this->loaded) && ($classMetadata = $this->driver->loadMetadataForClass($ormClassMetadata))) {
+            return $this->loaded[$ormClassMetadata->name] = $classMetadata;
         }
 
-        if (!array_key_exists($className, $this->loaded) && ($classMetadata = $this->driver->loadMetadataForClass(new \ReflectionClass($className)))) {
-            return $this->loaded[$className] = $classMetadata;
-        }
-
-        return $this->loaded[$className]??null;
+        return $this->loaded[$ormClassMetadata->name]??null;
     }
 }

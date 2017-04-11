@@ -2,6 +2,7 @@
 namespace Argayash\DenormalizedOrm\Mapping\Driver;
 
 use Argayash\DenormalizedOrm\Mapping\DnClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * This class provides method to load custom driver.
@@ -9,9 +10,9 @@ use Argayash\DenormalizedOrm\Mapping\DnClassMetadata;
 interface DriverInterface
 {
     /**
-     * @param \ReflectionClass $class
+     * @param ClassMetadata $classMetadata
      *
      * @return DnClassMetadata
      */
-    public function loadMetadataForClass(\ReflectionClass $class);
+    public function loadMetadataForClass(ClassMetadata $classMetadata);
 }

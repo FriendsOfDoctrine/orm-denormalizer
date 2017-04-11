@@ -2,6 +2,7 @@
 namespace Argayash\DenormalizedOrm\Mapping;
 
 use Argayash\DenormalizedOrm\Mapping\Annotation\DnTable;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * This class contains entity class metadata.
@@ -11,21 +12,47 @@ class DnClassMetadata
     /**
      * @var DnTable
      */
-    protected $table;
+    protected $dnTable;
+
+    /** @var  ClassMetadata */
+    protected $classMetadata;
 
     /**
-     * @param DnTable $table
+     * DnClassMetadata constructor.
+     *
+     * @param ClassMetadata $classMetadata
+     * @param DnTable $dnTable
      */
-    public function __construct(DnTable $table)
+    protected function __construct(ClassMetadata $classMetadata, DnTable $dnTable)
     {
-        $this->table = $table;
+        $this->classMetadata = $classMetadata;
+        $this->dnTable = $dnTable;
     }
 
     /**
      * @return DnTable
      */
-    public function getTable(): DnTable
+    public function getDnTable(): DnTable
     {
-        return $this->table;
+        return $this->dnTable;
+    }
+
+    /**
+     * @return ClassMetadata
+     */
+    public function getClassMetadata(): ClassMetadata
+    {
+        return $this->classMetadata;
+    }
+
+    /**
+     * @param ClassMetadata $classMetadata
+     * @param DnTable $dnTable
+     *
+     * @return DnClassMetadata
+     */
+    public static function create(ClassMetadata $classMetadata, DnTable $dnTable)
+    {
+        return new self($classMetadata, $dnTable);
     }
 }

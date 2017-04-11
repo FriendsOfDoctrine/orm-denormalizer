@@ -4,6 +4,7 @@ namespace Argayash\DenormalizedOrm;
 
 use Argayash\DenormalizedOrm\Mapping\Annotation\DnTable;
 use Argayash\DenormalizedOrm\Mapping\DnClassMetadata;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -16,9 +17,6 @@ class DnTableGroup
      * @var array
      */
     protected $structureSchema = [];
-
-    /** @var ClassMetadata[] */
-    protected $classMetadata = [];
 
     /**
      * @var array
@@ -43,12 +41,10 @@ class DnTableGroup
      * DnTableGroup constructor.
      *
      * @param array $structureSchema
-     * @param ClassMetadata[] $classMetadata
      * @param DnClassMetadata[] $dnClassMetadata
      */
-    public function __construct(array $structureSchema, array $classMetadata, array $dnClassMetadata)
+    public function __construct(array $structureSchema, array $dnClassMetadata)
     {
-        $this->classMetadata = $classMetadata;
         $this->structureSchema = $structureSchema;
         $this->dnClassMetadata = $dnClassMetadata;
     }
@@ -96,17 +92,25 @@ class DnTableGroup
 
         foreach ($this->structureSchema as $entityClass => $entityJoins) {
             if (($classMetadata = $this->getClassMetadataByName($entityClass)) && ($dnClassMetadata = $this->getDnClassMetadataByName($entityClass))) {
-                $tableName[] = $dnClassMetadata->getTable()->name ?: $classMetadata->reflClass->getShortName();
+                $tableName[] = $dnClassMetadata->getDnTable()->name ?: $classMetadata->reflClass->getShortName();
 
                 foreach ($entityJoins as $joinKey => $entityJoin) {
                     if (($classMetadata = $this->getClassMetadataByName($entityJoin)) && ($dnClassMetadata = $this->getDnClassMetadataByName($entityJoin))) {
-                        $tableName[] = $joinKey . DnTable::DENORMALIZE_FIELD_DELIMITER . ($dnClassMetadata->getTable()->name ?: $classMetadata->reflClass->getShortName());
+                        $tableName[] = $joinKey . DnTable::DENORMALIZE_FIELD_DELIMITER . ($dnClassMetadata->getDnTable()->name ?: $classMetadata->reflClass->getShortName());
                     }
                 }
             }
         }
 
         return strtolower(implode(DnTable::DENORMALIZE_TABLE_DELIMITER, $tableName));
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getTableName();
     }
 
     /**
@@ -117,10 +121,10 @@ class DnTableGroup
         foreach ($this->structureSchema as $entityClass => $entityJoins) {
             if ($classMetadata = $this->getClassMetadataByName($entityClass)) {
                 $columnPrefix = $classMetadata->getReflectionClass()->getShortName();
-                $this->getColumnsOfClassMetadata($columnPrefix, $classMetadata, $this->getDnClassMetadataByName($entityClass));
+                $this->getColumnsOfClassMetadata($columnPrefix, $this->getDnClassMetadataByName($entityClass));
                 foreach ($entityJoins as $joinKey => $entityJoin) {
                     if ($classMetadata = $this->getClassMetadataByName($entityJoin)) {
-                        $this->getColumnsOfClassMetadata($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $joinKey, $classMetadata, $this->getDnClassMetadataByName($entityJoin));
+                        $this->getColumnsOfClassMetadata($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $joinKey, $this->getDnClassMetadataByName($entityJoin));
                     }
                 }
             }
@@ -138,17 +142,40 @@ class DnTableGroup
     }
 
     /**
+     * @param Connection $connection
+     *
+     * @return string[]
+     */
+    public function getMigrationSQL(Connection $connection): array
+    {
+        $fromSchema = $connection->getSchemaManager()->createSchema();
+
+        $toSchema = clone $fromSchema;
+        $newTable = $toSchema->createTable($this->getTableName());
+
+        /** @var DnColumn $column */
+        foreach ($this->getColumns() as $column) {
+            $newTable->addColumn($column->getName(), $column->getType(), $column->getOptions());
+        }
+
+        if ($this->getIndexes()) {
+            $newTable->setPrimaryKey($this->getIndexes());
+        }
+
+        return $fromSchema->getMigrateToSql($toSchema, $connection->getDatabasePlatform());
+    }
+
+    /**
      * @param string $columnPrefix
-     * @param ClassMetadata $classMetadata
      * @param DnClassMetadata $dnClassMetadata
      *
      * @return $this
      */
-    protected function getColumnsOfClassMetadata(string $columnPrefix, ClassMetadata $classMetadata, DnClassMetadata $dnClassMetadata)
+    protected function getColumnsOfClassMetadata(string $columnPrefix, DnClassMetadata $dnClassMetadata)
     {
-        foreach ($classMetadata->fieldMappings as $fieldName => $field) {
-            if (!in_array($fieldName, (array)$dnClassMetadata->getTable()->excludeFields, true)) {
-                $dnColumn = new DnColumn($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $fieldName, $field, $classMetadata->name, $fieldName);
+        foreach ($dnClassMetadata->getClassMetadata()->fieldMappings as $fieldName => $field) {
+            if (!in_array($fieldName, (array)$dnClassMetadata->getDnTable()->excludeFields, true)) {
+                $dnColumn = new DnColumn($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $fieldName, $field, $dnClassMetadata->getClassMetadata()->name, $fieldName);
                 if (!$this->isSetIndex && isset($field['id']) && $field['id']) {
                     $this->indexes[] = $dnColumn->getName();
                 }
@@ -168,7 +195,7 @@ class DnTableGroup
      */
     protected function getClassMetadataByName(string $className)
     {
-        return $this->classMetadata[$className]??null;
+        return $this->getDnClassMetadataByName($className) ? $this->getDnClassMetadataByName($className)->getClassMetadata() : null;
     }
 
     /**

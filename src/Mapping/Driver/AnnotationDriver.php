@@ -5,6 +5,7 @@ namespace Argayash\DenormalizedOrm\Mapping\Driver;
 use Argayash\DenormalizedOrm\Mapping\Annotation\DnTable;
 use Argayash\DenormalizedOrm\Mapping\DnClassMetadata;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * This class provides method to load metadata from class annotations.
@@ -24,15 +25,20 @@ class AnnotationDriver implements DriverInterface
         $this->reader = $reader;
     }
 
-    public function loadMetadataForClass(\ReflectionClass $class)
+    /**
+     * @param ClassMetadata $classMetadata
+     *
+     * @return DnClassMetadata|null
+     */
+    public function loadMetadataForClass(ClassMetadata $classMetadata)
     {
         /** @var DnTable $tableMetadata */
-        if ($tableMetadata = $this->reader->getClassAnnotation($class, DnTable::class)) {
+        if ($tableMetadata = $this->reader->getClassAnnotation($classMetadata->reflClass, DnTable::class)) {
             if (!$tableMetadata->name) {
-                $tableMetadata->name = $class->getShortName();
+                $tableMetadata->name = $classMetadata->reflClass->getShortName();
             }
 
-            return new DnClassMetadata($tableMetadata);
+            return DnClassMetadata::create($classMetadata, $tableMetadata);
         }
 
         return null;
