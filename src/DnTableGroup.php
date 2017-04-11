@@ -68,6 +68,18 @@ class DnTableGroup
     }
 
     /**
+     * @param string $className
+     *
+     * @return bool
+     */
+    public function hasClass(string $className)
+    {
+        return count(array_filter($this->structureSchema, function ($value, $key) use ($className) {
+                return $key === $className || in_array($className, $value, true);
+            }, ARRAY_FILTER_USE_BOTH)) > 0;
+    }
+
+    /**
      * @return array
      */
     public function getStructureSchema(): array
