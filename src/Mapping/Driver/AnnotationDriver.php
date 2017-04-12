@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 /**
  * This class provides method to load metadata from class annotations.
  */
-class AnnotationDriver implements DriverInterface
+class AnnotationDriver
 {
     /**
      * @var Reader

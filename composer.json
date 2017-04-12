@@ -3,8 +3,7 @@
     "type": "library",
     "require": {
         "php": ">=7.0.0",
-        "doctrine/orm": "^2.5",
-        "doctrine/dbal": "^2.5"
+        "doctrine/orm": "^2.5"
     },
     "license": "MIT",
     "authors": [

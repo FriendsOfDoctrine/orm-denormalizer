@@ -1,7 +1,7 @@
 <?php
 namespace Argayash\DenormalizedOrm\Mapping;
 
-use Argayash\DenormalizedOrm\Mapping\Driver\DriverInterface;
+use Argayash\DenormalizedOrm\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -15,14 +15,15 @@ class DnClassMetadataFactory
     private $loaded = [];
 
     /**
-     * @var DriverInterface
+     * @var AnnotationDriver
      */
     private $driver;
 
     /**
-     * @param DriverInterface $driver
+     * DnClassMetadataFactory constructor.
+     * @param AnnotationDriver $driver
      */
-    public function __construct(DriverInterface $driver)
+    public function __construct(AnnotationDriver $driver)
     {
         $this->driver = $driver;
     }

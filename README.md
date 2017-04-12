@@ -17,7 +17,7 @@ use this annotation for entity Class
 class DBuilding
 {
 ...
-
+}
 
 /**
  * DSchool
@@ -29,7 +29,7 @@ class DBuilding
 class DSchool
 {
 ...
-
+}
 ```
 Optional attributes:
 
@@ -54,7 +54,7 @@ register service:
         arguments: ['@denorm.driver.annotation']
 
     denorm.listeners.metadata_loader.listener:
-        class: AppBundle\EventListener\MetadataLoader
+        class: Argayash\DenormalizedOrm\Listeners\LoadClassMetadataListener
         arguments: ['@denorm.class_metadata_factory.annotation', '@denorm.dn_table_group.container']
         tags:
             - {name: doctrine.event_listener, event: loadClassMetadata}
