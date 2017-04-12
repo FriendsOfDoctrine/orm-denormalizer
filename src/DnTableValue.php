@@ -44,7 +44,7 @@ class DnTableValue
      *
      * @return mixed
      */
-    protected function getPropertyByName(string $propertyName)
+    protected function getPropertyByName($propertyName)
     {
         $propertyGetMethod = 'get' . ucfirst($propertyName);
         if (method_exists($this->entity, $propertyGetMethod)) {

@@ -33,7 +33,7 @@ class AnnotationDriver
     public function loadMetadataForClass(ClassMetadata $classMetadata)
     {
         /** @var DnTable $tableMetadata */
-        if ($tableMetadata = $this->reader->getClassAnnotation($classMetadata->reflClass, DnTable::class)) {
+        if ($tableMetadata = $this->reader->getClassAnnotation($classMetadata->reflClass, DnTable::CLASSNAME)) {
             if (!$tableMetadata->name) {
                 $tableMetadata->name = $classMetadata->reflClass->getShortName();
             }

@@ -90,7 +90,7 @@ class DnTableGroup
      *
      * @return bool
      */
-    public function hasClass(string $className)
+    public function hasClass($className)
     {
         return count(array_filter($this->structureSchema, function ($value, $key) use ($className) {
                 return $key === $className || in_array($className, $value, true);
@@ -100,7 +100,7 @@ class DnTableGroup
     /**
      * @return array
      */
-    public function getStructureSchema(): array
+    public function getStructureSchema()
     {
         return $this->structureSchema;
     }
@@ -160,7 +160,7 @@ class DnTableGroup
     /**
      * @return array
      */
-    public function getIndexes(): array
+    public function getIndexes()
     {
         return $this->indexes;
     }
@@ -170,7 +170,7 @@ class DnTableGroup
      *
      * @return string[]
      */
-    public function getMigrationSQL(Connection $connection): array
+    public function getMigrationSQL(Connection $connection)
     {
         $fromSchema = $connection->getSchemaManager()->createSchema();
 
@@ -195,7 +195,7 @@ class DnTableGroup
      *
      * @return $this
      */
-    protected function getColumnsOfClassMetadata(string $columnPrefix, DnClassMetadata $dnClassMetadata)
+    protected function getColumnsOfClassMetadata($columnPrefix, DnClassMetadata $dnClassMetadata)
     {
         foreach ($dnClassMetadata->getClassMetadata()->fieldMappings as $fieldName => $field) {
             if (!in_array($fieldName, (array)$dnClassMetadata->getDnTable()->excludeFields, true)) {
@@ -217,7 +217,7 @@ class DnTableGroup
      *
      * @return ClassMetadata|null
      */
-    protected function getClassMetadataByName(string $className)
+    protected function getClassMetadataByName($className)
     {
         return $this->getDnClassMetadataByName($className) ? $this->getDnClassMetadataByName($className)->getClassMetadata() : null;
     }
@@ -227,8 +227,8 @@ class DnTableGroup
      *
      * @return DnClassMetadata|null
      */
-    protected function getDnClassMetadataByName(string $className)
+    protected function getDnClassMetadataByName($className)
     {
-        return $this->dnClassMetadata[$className]??null;
+        return isset($this->dnClassMetadata[$className]) ? $this->dnClassMetadata[$className] : null;
     }
 }

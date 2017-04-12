@@ -10,6 +10,7 @@ namespace Argayash\DenormalizedOrm\Mapping\Annotation;
  */
 class DnTable implements DnAnnotation
 {
+    const CLASSNAME = __CLASS__;
     const DENORMALIZE_TABLE_DELIMITER = '___';
     const DENORMALIZE_FIELD_DELIMITER = '__';
 

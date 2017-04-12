@@ -32,7 +32,7 @@ class DnClassMetadata
     /**
      * @return DnTable
      */
-    public function getDnTable(): DnTable
+    public function getDnTable()
     {
         return $this->dnTable;
     }
@@ -40,7 +40,7 @@ class DnClassMetadata
     /**
      * @return ClassMetadata
      */
-    public function getClassMetadata(): ClassMetadata
+    public function getClassMetadata()
     {
         return $this->classMetadata;
     }

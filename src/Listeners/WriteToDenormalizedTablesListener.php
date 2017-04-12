@@ -54,7 +54,7 @@ class WriteToDenormalizedTablesListener
                     } else {
                         foreach ($dnTableGroup->getStructureSchema() as $schemaEntityKey => $schemaRelation) {
                             foreach ($schemaRelation as $property => $className) {
-                                $relationEntities[$className] = $uow->getOriginalEntityData($relationEntities[$schemaEntityKey]??$entity)[$property];
+                                $relationEntities[$className] = $uow->getOriginalEntityData(isset($relationEntities[$schemaEntityKey]) ? $relationEntities[$schemaEntityKey] : $entity)[$property];
                             }
                         }
                     }

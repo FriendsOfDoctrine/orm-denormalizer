@@ -7,6 +7,7 @@ use Argayash\DenormalizedOrm\DnTableGroupContainer;
 use Argayash\DenormalizedOrm\Mapping\DnClassMetadata;
 use Argayash\DenormalizedOrm\Mapping\DnClassMetadataFactory;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -39,9 +40,9 @@ class LoadClassMetadataListener
     }
 
     /**
-     * @param \Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs
+     * @param LoadClassMetadataEventArgs $eventArgs
      */
-    public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
         if (null === $this->em) {
             $this->em = $eventArgs->getEntityManager();
@@ -62,12 +63,10 @@ class LoadClassMetadataListener
         }
         foreach ($this->dnClassesMetadata as $dnClassMetadata) {
             foreach ($dnClassMetadata->getClassMetadata()->getAssociationMappings() as $association) {
-                if ($this->dnClassesMetadata[$association['targetEntity']]??null) {
-                    if (!empty($association['joinColumns'])) {
-                        /** Many-One */
-                        $group[$dnClassMetadata->getClassMetadata()->name][$association['fieldName']] = $association['targetEntity'];
-                        $dependsEntities[] = $association['targetEntity'];
-                    }
+                if (!empty($association['joinColumns']) && isset($this->dnClassesMetadata[$association['targetEntity']])) {
+                    /** Many-One */
+                    $group[$dnClassMetadata->getClassMetadata()->name][$association['fieldName']] = $association['targetEntity'];
+                    $dependsEntities[] = $association['targetEntity'];
                 }
             }
         }
@@ -88,7 +87,7 @@ class LoadClassMetadataListener
      *
      * @return array
      */
-    protected function getEntityGroupSchema(string $firstClass, array $classRelation, array $classesRelation)
+    protected function getEntityGroupSchema($firstClass, array $classRelation, array $classesRelation)
     {
         $relation = [];
 

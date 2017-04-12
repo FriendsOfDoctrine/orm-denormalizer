@@ -42,6 +42,6 @@ class DnClassMetadataFactory
             return $this->loaded[$ormClassMetadata->name] = $classMetadata;
         }
 
-        return $this->loaded[$ormClassMetadata->name]??null;
+        return isset($this->loaded[$ormClassMetadata->name]) ? $this->loaded[$ormClassMetadata->name] : null;
     }
 }

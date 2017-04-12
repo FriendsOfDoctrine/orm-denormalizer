@@ -27,7 +27,7 @@ class DnTableGroupContainer implements \Iterator
      *
      * @return DnTableGroup[]
      */
-    public function getByContainClass(string $className)
+    public function getByContainClass($className)
     {
         return array_filter($this->dnTableGroups, function ($dnTableGroup) use ($className) {
             /** @var DnTableGroup $dnTableGroup */
@@ -40,7 +40,7 @@ class DnTableGroupContainer implements \Iterator
      *
      * @return DnTableGroup[]
      */
-    public function getByLeadClass(string $className)
+    public function getByLeadClass($className)
     {
         return array_filter($this->dnTableGroups, function ($dnTableGroup) use ($className) {
             /** @var DnTableGroup $dnTableGroup */
@@ -50,7 +50,7 @@ class DnTableGroupContainer implements \Iterator
 
     public function current()
     {
-        return $this->dnTableGroups[$this->position]??null;
+        return isset($this->dnTableGroups[$this->position]) ? $this->dnTableGroups[$this->position] : null;
     }
 
     public function next()

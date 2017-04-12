@@ -28,11 +28,11 @@ class DnColumn
      * @param string $targetEntityClass
      * @param string $targetPropertyName
      */
-    public function __construct(string $name, array $field, string $targetEntityClass, string $targetPropertyName)
+    public function __construct($name, array $field, $targetEntityClass, $targetPropertyName)
     {
         $this->name = $name;
 
-        $this->type = $field['type']??'string';
+        $this->type = isset($field['type']) && !empty($field['type']) ? $field['type'] : 'string';
         $this->targetEntityClass = $targetEntityClass;
         $this->targetPropertyName = $targetPropertyName;
 
@@ -44,7 +44,7 @@ class DnColumn
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName()
     {
         return strtolower($this->name);
     }
@@ -52,7 +52,7 @@ class DnColumn
     /**
      * @return string
      */
-    public function getType(): string
+    public function getType()
     {
         return $this->type;
     }
@@ -60,7 +60,7 @@ class DnColumn
     /**
      * @return array
      */
-    public function getOptions(): array
+    public function getOptions()
     {
         return $this->options;
     }
@@ -68,7 +68,7 @@ class DnColumn
     /**
      * @return string
      */
-    public function getTargetEntityClass(): string
+    public function getTargetEntityClass()
     {
         return $this->targetEntityClass;
     }
@@ -76,7 +76,7 @@ class DnColumn
     /**
      * @return string
      */
-    public function getTargetPropertyName(): string
+    public function getTargetPropertyName()
     {
         return $this->targetPropertyName;
     }
