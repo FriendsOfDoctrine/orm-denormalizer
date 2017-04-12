@@ -3,6 +3,7 @@ namespace Argayash\DenormalizedOrm\Mapping;
 
 use Argayash\DenormalizedOrm\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Common\Annotations\Reader;
 
 /**
  * This class provides method to load entity class metadata.
@@ -12,20 +13,29 @@ class DnClassMetadataFactory
     /**
      * @var array
      */
-    private $loaded = [];
+    protected $loaded = [];
 
     /**
      * @var AnnotationDriver
      */
-    private $driver;
+    protected $driver;
 
     /**
-     * DnClassMetadataFactory constructor.
-     * @param AnnotationDriver $driver
+     * @param Reader $reader
      */
-    public function __construct(AnnotationDriver $driver)
+    public function __construct(Reader $reader)
     {
-        $this->driver = $driver;
+        $this->driver = AnnotationDriver::newInstance($reader);
+    }
+
+    /**
+     * @param Reader $reader
+     *
+     * @return DnClassMetadataFactory
+     */
+    public static function newInstance(Reader $reader)
+    {
+        return new self($reader);
     }
 
     /**

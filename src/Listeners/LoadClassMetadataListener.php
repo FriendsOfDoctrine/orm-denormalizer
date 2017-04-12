@@ -9,6 +9,7 @@ use Argayash\DenormalizedOrm\Mapping\DnClassMetadataFactory;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Common\Annotations\Reader;
 
 /**
  * Class LoadClassMetadataListener
@@ -28,54 +29,52 @@ class LoadClassMetadataListener
     protected $dnClassesMetadata = [];
 
     /**
-     * MetadataLoader constructor.
+     * LoadClassMetadataListener constructor.
      *
-     * @param DnClassMetadataFactory $dnClassMetadataFactory
+     * @param Reader $reader
      * @param DnTableGroupContainer $container
      */
-    public function __construct(DnClassMetadataFactory $dnClassMetadataFactory, DnTableGroupContainer $container)
+    public function __construct(Reader $reader, DnTableGroupContainer $container)
     {
+        $this->classMetadataFactory = DnClassMetadataFactory::newInstance($reader);
         $this->container = $container;
-        $this->classMetadataFactory = $dnClassMetadataFactory;
     }
 
     /**
      * @param LoadClassMetadataEventArgs $eventArgs
+     *
+     * @throws \Exception
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
         if (null === $this->em) {
             $this->em = $eventArgs->getEntityManager();
-            $this->load();
-        }
-    }
 
-    protected function load()
-    {
-        $group = [];
-        $dependsEntities = [];
+            $group = [];
+            $dependsEntities = [];
 
-        /** @var ClassMetadata $classMetadata */
-        foreach ($this->em->getMetadataFactory()->getAllMetadata() as $classMetadata) {
-            if ($dnClassMetadata = $this->classMetadataFactory->loadMetadata($classMetadata)) {
-                $this->dnClassesMetadata[$classMetadata->name] = $dnClassMetadata;
-            }
-        }
-        foreach ($this->dnClassesMetadata as $dnClassMetadata) {
-            foreach ($dnClassMetadata->getClassMetadata()->getAssociationMappings() as $association) {
-                if (!empty($association['joinColumns']) && isset($this->dnClassesMetadata[$association['targetEntity']])) {
-                    /** Many-One */
-                    $group[$dnClassMetadata->getClassMetadata()->name][$association['fieldName']] = $association['targetEntity'];
-                    $dependsEntities[] = $association['targetEntity'];
+            /** @var ClassMetadata $classMetadata */
+            foreach ($this->em->getMetadataFactory()->getAllMetadata() as $classMetadata) {
+                if ($dnClassMetadata = $this->classMetadataFactory->loadMetadata($classMetadata)) {
+                    $this->dnClassesMetadata[$classMetadata->name] = $dnClassMetadata;
                 }
             }
-        }
+            foreach ($this->dnClassesMetadata as $dnClassMetadata) {
+                foreach ($dnClassMetadata->getClassMetadata()->getAssociationMappings() as $association) {
+                    if (!empty($association['joinColumns']) && isset($this->dnClassesMetadata[$association['targetEntity']])) {
+                        /** Many-One */
+                        $group[$dnClassMetadata->getClassMetadata()->name][$association['fieldName']] = $association['targetEntity'];
+                        $dependsEntities[] = $association['targetEntity'];
+                    }
+                }
+            }
 
-        foreach (array_filter($group, function ($key) use ($dependsEntities) {
-            return !in_array($key, $dependsEntities, true);
-        }, ARRAY_FILTER_USE_KEY) as $firstEntityName => $mappingEntities) {
-            if (isset($group[$firstEntityName])) {
-                $this->container->add(new DnTableGroup($this->getEntityGroupSchema($firstEntityName, $group[$firstEntityName], $group), $this->dnClassesMetadata));
+            foreach (array_filter($group, function ($key) use ($dependsEntities) {
+                return !in_array($key, $dependsEntities, true);
+            }, ARRAY_FILTER_USE_KEY) as $firstEntityName => $mappingEntities) {
+                if (isset($group[$firstEntityName])) {
+                    $this->container->add(new DnTableGroup($this->getEntityGroupSchema($firstEntityName, $group[$firstEntityName], $group), $this->dnClassesMetadata));
+                }
             }
         }
     }

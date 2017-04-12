@@ -41,27 +41,18 @@ Optional attributes:
 register service:
 ```yml
 # app/config/services.yml
-    # contain information about group of denormalized tables
-    denorm.dn_table_group.container:
-        class: Argayash\DenormalizedOrm\DnTableGroupContainer
-
-    denorm.driver.annotation:
-        class: Argayash\DenormalizedOrm\Mapping\Driver\AnnotationDriver
-        arguments: ['@annotations.reader']
-
-    denorm.class_metadata_factory.annotation:
-        class: Argayash\DenormalizedOrm\Mapping\DnClassMetadataFactory
-        arguments: ['@denorm.driver.annotation']
-
-    denorm.listeners.metadata_loader.listener:
-        class: Argayash\DenormalizedOrm\Listeners\LoadClassMetadataListener
-        arguments: ['@denorm.class_metadata_factory.annotation', '@denorm.dn_table_group.container']
-        tags:
-            - {name: doctrine.event_listener, event: loadClassMetadata}
-
     denorm.table_manager:
         class: Argayash\DenormalizedOrm\DnTableManager
         arguments: ['@doctrine.orm.entity_manager']
+
+    denorm.dn_table_group.container:
+        class: Argayash\DenormalizedOrm\DnTableGroupContainer
+
+    denorm.listeners.metadata_loader.listener:
+        class: Argayash\DenormalizedOrm\Listeners\LoadClassMetadataListener
+        arguments: ['@annotations.reader', '@denorm.dn_table_group.container']
+        tags:
+            - {name: doctrine.event_listener, event: loadClassMetadata}
 
     denorm.listeners.onflush_listener:
         class: AppBundle\EventListener\DnFlushListener
@@ -69,9 +60,7 @@ register service:
         tags:
             - {name: doctrine.event_listener, event: onFlush}
         calls:
-            - ['setConnection', ['@service_container']]
-
-
+            - ['createConnection', ['@service_container']]
 ```
 example console command for scan and create all denormalized entities
 ```php

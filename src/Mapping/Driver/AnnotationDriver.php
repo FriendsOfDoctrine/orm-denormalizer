@@ -15,7 +15,7 @@ class AnnotationDriver
     /**
      * @var Reader
      */
-    private $reader;
+    protected $reader;
 
     /**
      * @param Reader $reader
@@ -23,6 +23,16 @@ class AnnotationDriver
     public function __construct(Reader $reader)
     {
         $this->reader = $reader;
+    }
+
+    /**
+     * @param Reader $reader
+     *
+     * @return AnnotationDriver
+     */
+    public static function newInstance(Reader $reader)
+    {
+        return new self($reader);
     }
 
     /**
