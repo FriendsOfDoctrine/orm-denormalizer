@@ -35,6 +35,19 @@ class DnTableGroupContainer implements \Iterator
         });
     }
 
+    /**
+     * @param string $className
+     *
+     * @return DnTableGroup[]
+     */
+    public function getByLeadClass(string $className)
+    {
+        return array_filter($this->dnTableGroups, function ($dnTableGroup) use ($className) {
+            /** @var DnTableGroup $dnTableGroup */
+            return current(array_keys($dnTableGroup->getStructureSchema())) === $className;
+        });
+    }
+
     public function current()
     {
         return $this->dnTableGroups[$this->position]??null;

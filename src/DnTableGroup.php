@@ -19,7 +19,7 @@ class DnTableGroup
     protected $structureSchema = [];
 
     /**
-     * @var array
+     * @var DnColumn[]
      */
     protected $columns = [];
 
@@ -37,6 +37,14 @@ class DnTableGroup
      */
     protected $isSetIndex = false;
 
+    /** @var DnTableValue[][] */
+    protected $dnTableValues = [];
+
+    /**
+     * @var array
+     */
+    protected $columnValuesSetNumbers = [];
+
     /**
      * DnTableGroup constructor.
      *
@@ -50,17 +58,31 @@ class DnTableGroup
     }
 
     /**
-     * @param string $parentClassName
-     * @param string $fieldName
-     * @param string $childrenClassName
+     * @param DnTableValue $value
      *
      * @return $this
      */
-    public function add(string $parentClassName, string $fieldName, string $childrenClassName)
+    public function addColumnValue(DnTableValue $value)
     {
-        $this->structureSchema[$parentClassName][$fieldName] = $childrenClassName;
+        $this->columnValuesSetNumbers[$value->getName()] = !isset($this->columnValuesSetNumbers[$value->getName()]) ? 0 : ($this->columnValuesSetNumbers[$value->getName()] + 1);
+        $this->dnTableValues[$this->columnValuesSetNumbers[$value->getName()]][$value->getName()] = $value;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getValuesArray()
+    {
+        $values = [];
+        foreach ($this->dnTableValues as $setIndex => $setValues) {
+            foreach ($setValues as $dnTableValue) {
+                $values[$setIndex][$dnTableValue->getName()] = $dnTableValue->getValue();
+            }
+        }
+
+        return $values;
     }
 
     /**
@@ -118,13 +140,15 @@ class DnTableGroup
      */
     public function getColumns()
     {
-        foreach ($this->structureSchema as $entityClass => $entityJoins) {
-            if ($classMetadata = $this->getClassMetadataByName($entityClass)) {
-                $columnPrefix = $classMetadata->getReflectionClass()->getShortName();
-                $this->getColumnsOfClassMetadata($columnPrefix, $this->getDnClassMetadataByName($entityClass));
-                foreach ($entityJoins as $joinKey => $entityJoin) {
-                    if ($classMetadata = $this->getClassMetadataByName($entityJoin)) {
-                        $this->getColumnsOfClassMetadata($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $joinKey, $this->getDnClassMetadataByName($entityJoin));
+        if (!$this->columns) {
+            foreach ($this->structureSchema as $entityClass => $entityJoins) {
+                if ($classMetadata = $this->getClassMetadataByName($entityClass)) {
+                    $columnPrefix = $classMetadata->getReflectionClass()->getShortName();
+                    $this->getColumnsOfClassMetadata($columnPrefix, $this->getDnClassMetadataByName($entityClass));
+                    foreach ($entityJoins as $joinKey => $entityJoin) {
+                        if ($classMetadata = $this->getClassMetadataByName($entityJoin)) {
+                            $this->getColumnsOfClassMetadata($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $joinKey, $this->getDnClassMetadataByName($entityJoin));
+                        }
                     }
                 }
             }
@@ -179,7 +203,7 @@ class DnTableGroup
                 if (!$this->isSetIndex && isset($field['id']) && $field['id']) {
                     $this->indexes[] = $dnColumn->getName();
                 }
-                $this->columns[] = $dnColumn;
+                $this->columns[$dnColumn->getName()] = $dnColumn;
             }
         }
 
