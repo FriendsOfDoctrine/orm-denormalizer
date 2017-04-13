@@ -1,5 +1,5 @@
 {
-    "name": "friendsofdoctrine/orm-denormalized",
+    "name": "friendsofdoctrine/orm-denormalizer",
     "type": "library",
     "require": {
         "php": ">=5.4",
@@ -14,7 +14,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "FOD\\OrmDenormalized\\": "src/"
+            "FOD\\OrmDenormalizer\\": "src/"
         }
     }
 }

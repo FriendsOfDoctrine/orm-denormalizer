@@ -1,9 +1,9 @@
 <?php
-namespace FOD\OrmDenormalized;
+namespace FOD\OrmDenormalizer;
 
 /**
  * Class DnColumn
- * @package FOD\OrmDenormalized
+ * @package FOD\OrmDenormalizer
  */
 class DnColumn
 {

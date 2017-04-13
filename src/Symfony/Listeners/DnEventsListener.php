@@ -1,10 +1,10 @@
 <?php
-namespace FOD\OrmDenormalized\Symfony\Listeners;
+namespace FOD\OrmDenormalizer\Symfony\Listeners;
 
 
-use FOD\OrmDenormalized\DnTableGroupContainer;
-use FOD\OrmDenormalized\Listeners\LoadClassMetadataListener;
-use FOD\OrmDenormalized\Listeners\WriteToDenormalizedTablesListener;
+use FOD\OrmDenormalizer\DnTableGroupContainer;
+use FOD\OrmDenormalizer\Listeners\LoadClassMetadataListener;
+use FOD\OrmDenormalizer\Listeners\WriteToDenormalizedTablesListener;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;

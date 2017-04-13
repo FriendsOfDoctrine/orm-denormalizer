@@ -1,12 +1,12 @@
-# doctrine-orm-denormalize
-denormalized doctrine ORM entities
+# orm-denormalizer
+denormalize your doctrine ORM entities
 
 ### setup the Symfony 2/3 project:
 
 ##### 1. describe the `@DENORM\DnTable` annotations for entities
 
 ```php
-use FOD\OrmDenormalized\Mapping\Annotation as DENORM;
+use FOD\OrmDenormalizer\Mapping\Annotation as DENORM;
 ```
 #### @DENORM\DnTable
 use this annotation for entity Class
@@ -46,12 +46,12 @@ Optional attributes:
 # app/config/services.yml
     # denormalization table manager (create table)
     fod.denorm.table_manager:
-        class: FOD\OrmDenormalized\DnTableManager
+        class: FOD\OrmDenormalizer\DnTableManager
         arguments: ['@doctrine.orm.entity_manager']
 
     # load information about All annotated denormalized entities and write to specific connection denormalized data
     fod.denorm.listeners.events_listener:
-        class: FOD\OrmDenormalized\Symfony\DnEventsListener
+        class: FOD\OrmDenormalizer\Symfony\DnEventsListener
         arguments: ['@annotations.reader']
         tags:
             - {name: doctrine.event_listener, event: onFlush}
@@ -61,7 +61,7 @@ Optional attributes:
     
     # optional service to register symfony console command generate SQL for create denormalized tables
     fod.denorm.command.create_denormalized_tables_command:
-        class: FOD\OrmDenormalized\Symfony\Command\CreateDenormalizedTablesCommand
+        class: FOD\OrmDenormalizer\Symfony\Command\CreateDenormalizedTablesCommand
         arguments: ['@fod.denorm.table_manager', '@doctrine.orm.entity_manager']
         tags:
             - {name: console.command}
