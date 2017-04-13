@@ -1,10 +1,14 @@
 # doctrine-orm-denormalize
 denormalized doctrine ORM entities
 
+### setup the Symfony 2/3 project:
+
+##### 1. describe the `@DENORM\DnTable` annotations for entities
+
 ```php
 use FOD\OrmDenormalized\Mapping\Annotation as DENORM;
 ```
-#### <a name="annotation"></a> @DENORM\DnTable
+#### @DENORM\DnTable
 use this annotation for entity Class
 ```php
 /**
@@ -36,10 +40,6 @@ Optional attributes:
 * `name` - specific part of the table name in the new generated denormalized table
 * `excludeFields` - array of entity field names that will not be processed
 
-
-### install to Symfony 2/3:
-
-##### 1. describe the [`@DENORM\DnTable`](#annotation) annotations for entities
 
 ##### 2. register services:
 ```yml
