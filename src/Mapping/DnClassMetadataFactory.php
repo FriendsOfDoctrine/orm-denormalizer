@@ -23,9 +23,9 @@ class DnClassMetadataFactory
     /**
      * @param Reader $reader
      */
-    public function __construct(Reader $reader)
+    protected function __construct(Reader $reader)
     {
-        $this->driver = AnnotationDriver::newInstance($reader);
+        $this->driver = AnnotationDriver::getInstance($reader);
     }
 
     /**
@@ -33,7 +33,7 @@ class DnClassMetadataFactory
      *
      * @return DnClassMetadataFactory
      */
-    public static function newInstance(Reader $reader)
+    public static function getInstance(Reader $reader)
     {
         return new self($reader);
     }

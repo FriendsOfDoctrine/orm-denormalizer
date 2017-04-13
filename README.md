@@ -37,30 +37,24 @@ Optional attributes:
 `excludeFields` - array of entity field names that will not be processed
 
 
-### Symfony example
-register service:
+### install to Symfony 2/3:
+##### register service:
 ```yml
 # app/config/services.yml
+    # denormalization table manager (create table)
     denorm.table_manager:
         class: Argayash\DenormalizedOrm\DnTableManager
         arguments: ['@doctrine.orm.entity_manager']
 
-    denorm.dn_table_group.container:
-        class: Argayash\DenormalizedOrm\DnTableGroupContainer
-
-    denorm.listeners.metadata_loader.listener:
-        class: Argayash\DenormalizedOrm\Listeners\LoadClassMetadataListener
-        arguments: ['@annotations.reader', '@denorm.dn_table_group.container']
-        tags:
-            - {name: doctrine.event_listener, event: loadClassMetadata}
-
-    denorm.listeners.onflush_listener:
-        class: AppBundle\EventListener\DnFlushListener
-        arguments: ['@denorm.dn_table_group.container']
+    # load information about All annotated denormalized entities and write to specific connection denormalized data
+    denorm.listeners.events_listener:
+        class: Argayash\DenormalizedOrm\Symfony\DnEventsListener
+        arguments: ['@annotations.reader']
         tags:
             - {name: doctrine.event_listener, event: onFlush}
+            - {name: doctrine.event_listener, event: loadClassMetadata}
         calls:
-            - ['createConnection', ['@service_container']]
+            - ['setWriteConnection', ['@service_container', 'doctrine.dbal.clickhouse_connection']] # second parameter (string) is name of doctrine connection
 ```
 example console command for scan and create all denormalized entities
 ```php
@@ -115,40 +109,3 @@ class DenormalizedOrmCommand extends ContainerAwareCommand
     }
 }
 ```
-
-by default usage doctrine default connection. you may set custom connection class in second operator in function $dnTableManager->createTable($dnTableGroup, $customConnection);
-
-### onFlush doctrine event
-
-example onFlush listener:
-
-```php
-<?php
-namespace AppBundle\EventListener;
-
-
-use Argayash\DenormalizedOrm\Listeners\WriteToDenormalizedTablesListener;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
-/**
- * Class DnFlushListener
- * @package AppBundle\EventListener
- */
-class DnFlushListener extends WriteToDenormalizedTablesListener
-{
-    /**
-     * @param ContainerInterface $container
-     *
-     * @return \Doctrine\DBAL\Connection
-     */
-    public function setConnection(ContainerInterface $container)
-    {
-        if (!$this->connection) {
-            $this->connection = $container->get('doctrine.dbal.clickhouse_connection');
-        }
-
-        return $this->connection;
-    }
-}
-```
-we extend base listener for set custom connection

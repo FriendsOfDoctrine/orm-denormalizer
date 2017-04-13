@@ -1,7 +1,10 @@
 <?php
 namespace Argayash\DenormalizedOrm;
 
-
+/**
+ * Class DnColumn
+ * @package Argayash\DenormalizedOrm
+ */
 class DnColumn
 {
     /** @var  string */

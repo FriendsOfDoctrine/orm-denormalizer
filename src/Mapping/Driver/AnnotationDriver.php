@@ -20,7 +20,7 @@ class AnnotationDriver
     /**
      * @param Reader $reader
      */
-    public function __construct(Reader $reader)
+    protected function __construct(Reader $reader)
     {
         $this->reader = $reader;
     }
@@ -30,7 +30,7 @@ class AnnotationDriver
      *
      * @return AnnotationDriver
      */
-    public static function newInstance(Reader $reader)
+    public static function getInstance(Reader $reader)
     {
         return new self($reader);
     }

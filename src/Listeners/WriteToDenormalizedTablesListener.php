@@ -4,6 +4,7 @@ namespace Argayash\DenormalizedOrm\Listeners;
 
 use Argayash\DenormalizedOrm\DnTableGroupContainer;
 use Argayash\DenormalizedOrm\DnTableValue;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 
@@ -25,10 +26,14 @@ class WriteToDenormalizedTablesListener
      * WriteToDenormalizedTablesListener constructor.
      *
      * @param DnTableGroupContainer $container
+     * @param Connection|null $connection
      */
-    public function __construct(DnTableGroupContainer $container)
+    public function __construct(DnTableGroupContainer $container, Connection $connection = null)
     {
         $this->dnTableGroupContainer = $container;
+        if (null !== $connection) {
+            $this->connection = $connection;
+        }
     }
 
     /**

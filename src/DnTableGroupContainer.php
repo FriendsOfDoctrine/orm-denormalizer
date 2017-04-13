@@ -8,11 +8,27 @@ namespace Argayash\DenormalizedOrm;
 class DnTableGroupContainer implements \Iterator
 {
     /** @var DnTableGroup[] */
-    protected $dnTableGroups = [];
+    protected $dnTableGroups;
     /**
      * @var int
      */
     protected $position = 0;
+
+    /**
+     * DnTableGroupContainer constructor.
+     */
+    protected function __construct()
+    {
+        $this->dnTableGroups = [];
+    }
+
+    /**
+     * @return DnTableGroupContainer
+     */
+    public static function getInstance()
+    {
+        return new self();
+    }
 
     /**
      * @param DnTableGroup $dnTableGroup

@@ -31,12 +31,12 @@ class LoadClassMetadataListener
     /**
      * LoadClassMetadataListener constructor.
      *
-     * @param Reader $reader
      * @param DnTableGroupContainer $container
+     * @param Reader $reader
      */
-    public function __construct(Reader $reader, DnTableGroupContainer $container)
+    public function __construct(DnTableGroupContainer $container, Reader $reader)
     {
-        $this->classMetadataFactory = DnClassMetadataFactory::newInstance($reader);
+        $this->classMetadataFactory = DnClassMetadataFactory::getInstance($reader);
         $this->container = $container;
     }
 
