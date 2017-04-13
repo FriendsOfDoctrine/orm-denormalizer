@@ -33,8 +33,8 @@ class DSchool
 ```
 Optional attributes:
 
-`name` - specific table part name in new generated denormalized table
-`excludeFields` - array of entity field names that will not be processed
+* `name` - specific table part name in new generated denormalized table
+* `excludeFields` - array of entity field names that will not be processed
 
 
 ### install to Symfony 2/3:
