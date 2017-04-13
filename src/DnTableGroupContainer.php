@@ -1,9 +1,9 @@
 <?php
-namespace Argayash\DenormalizedOrm;
+namespace FOD\DoctrineOrmDenormalized;
 
 /**
  * Class DnTableGroupContainer
- * @package Argayash\DenormalizedOrm
+ * @package FOD\DoctrineOrmDenormalized
  */
 class DnTableGroupContainer implements \Iterator
 {

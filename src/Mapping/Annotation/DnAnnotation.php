@@ -1,5 +1,5 @@
 <?php
-namespace Argayash\DenormalizedOrm\Mapping\Annotation;
+namespace FOD\DoctrineOrmDenormalized\Mapping\Annotation;
 
 /**
  * Interface DnAnnotation

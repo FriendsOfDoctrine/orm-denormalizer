@@ -1,9 +1,9 @@
 <?php
-namespace Argayash\DenormalizedOrm;
+namespace FOD\DoctrineOrmDenormalized;
 
 /**
  * Class DnColumn
- * @package Argayash\DenormalizedOrm
+ * @package FOD\DoctrineOrmDenormalized
  */
 class DnColumn
 {

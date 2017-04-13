@@ -1,5 +1,5 @@
 <?php
-namespace Argayash\DenormalizedOrm;
+namespace FOD\DoctrineOrmDenormalized;
 
 
 class DnTableValue

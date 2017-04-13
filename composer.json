@@ -1,5 +1,5 @@
 {
-    "name": "argayash/doctrine-orm-denormalize",
+    "name": "FriendsOfDoctrine/doctrine-orm-denormalized",
     "type": "library",
     "require": {
         "php": ">=5.4",
@@ -14,7 +14,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Argayash\\DenormalizedOrm\\": "src/"
+            "FOD\\DoctrineOrmDenormalized\\": "src/"
         }
     }
 }

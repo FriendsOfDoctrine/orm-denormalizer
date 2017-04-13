@@ -1,9 +1,9 @@
 <?php
 
-namespace Argayash\DenormalizedOrm\Mapping\Driver;
+namespace FOD\DoctrineOrmDenormalized\Mapping\Driver;
 
-use Argayash\DenormalizedOrm\Mapping\Annotation\DnTable;
-use Argayash\DenormalizedOrm\Mapping\DnClassMetadata;
+use FOD\DoctrineOrmDenormalized\Mapping\Annotation\DnTable;
+use FOD\DoctrineOrmDenormalized\Mapping\DnClassMetadata;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping\ClassMetadata;
 

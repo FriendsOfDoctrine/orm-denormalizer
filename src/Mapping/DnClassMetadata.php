@@ -1,7 +1,7 @@
 <?php
-namespace Argayash\DenormalizedOrm\Mapping;
+namespace FOD\DoctrineOrmDenormalized\Mapping;
 
-use Argayash\DenormalizedOrm\Mapping\Annotation\DnTable;
+use FOD\DoctrineOrmDenormalized\Mapping\Annotation\DnTable;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**

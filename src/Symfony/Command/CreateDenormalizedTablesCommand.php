@@ -1,9 +1,9 @@
 <?php
-namespace Argayash\DenormalizedOrm\Symfony\Command;
+namespace FOD\DoctrineOrmDenormalized\Symfony\Command;
 
 
-use Argayash\DenormalizedOrm\DnTableGroupContainer;
-use Argayash\DenormalizedOrm\DnTableManager;
+use FOD\DoctrineOrmDenormalized\DnTableGroupContainer;
+use FOD\DoctrineOrmDenormalized\DnTableManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\ORM\EntityManager;
