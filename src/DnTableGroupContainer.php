@@ -14,6 +14,9 @@ class DnTableGroupContainer implements \Iterator
      */
     protected $position = 0;
 
+    /** @var  DnTableGroupContainer */
+    protected static $instance;
+
     /**
      * DnTableGroupContainer constructor.
      */
@@ -27,7 +30,7 @@ class DnTableGroupContainer implements \Iterator
      */
     public static function getInstance()
     {
-        return new self();
+        return (self::$instance = null !== self::$instance ? self::$instance : new self());
     }
 
     /**

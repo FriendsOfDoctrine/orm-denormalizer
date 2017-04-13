@@ -1,5 +1,5 @@
 <?php
-namespace Argayash\DenormalizedOrm\Symfony;
+namespace Argayash\DenormalizedOrm\Symfony\Listeners;
 
 
 use Argayash\DenormalizedOrm\DnTableGroupContainer;
@@ -47,7 +47,7 @@ class DnEventsListener
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
      */
-    public function setWriteConnection(ContainerInterface $container, $doctrineConnectionName)
+    public function setConnection(ContainerInterface $container, $doctrineConnectionName)
     {
         if (!$this->connection) {
             $this->connection = $container->get($doctrineConnectionName);
