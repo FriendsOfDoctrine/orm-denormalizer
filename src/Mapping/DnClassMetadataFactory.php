@@ -1,7 +1,7 @@
 <?php
-namespace FOD\DoctrineOrmDenormalized\Mapping;
+namespace FOD\OrmDenormalized\Mapping;
 
-use FOD\DoctrineOrmDenormalized\Mapping\Driver\AnnotationDriver;
+use FOD\OrmDenormalized\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Annotations\Reader;
 

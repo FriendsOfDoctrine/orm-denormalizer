@@ -1,9 +1,9 @@
 <?php
-namespace FOD\DoctrineOrmDenormalized;
+namespace FOD\OrmDenormalized;
 
 
-use FOD\DoctrineOrmDenormalized\Mapping\Annotation\DnTable;
-use FOD\DoctrineOrmDenormalized\Mapping\DnClassMetadata;
+use FOD\OrmDenormalized\Mapping\Annotation\DnTable;
+use FOD\OrmDenormalized\Mapping\DnClassMetadata;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 

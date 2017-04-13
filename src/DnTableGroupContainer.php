@@ -1,9 +1,9 @@
 <?php
-namespace FOD\DoctrineOrmDenormalized;
+namespace FOD\OrmDenormalized;
 
 /**
  * Class DnTableGroupContainer
- * @package FOD\DoctrineOrmDenormalized
+ * @package FOD\OrmDenormalized
  */
 class DnTableGroupContainer implements \Iterator
 {

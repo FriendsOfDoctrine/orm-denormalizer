@@ -1,7 +1,7 @@
 <?php
-namespace FOD\DoctrineOrmDenormalized\Mapping;
+namespace FOD\OrmDenormalized\Mapping;
 
-use FOD\DoctrineOrmDenormalized\Mapping\Annotation\DnTable;
+use FOD\OrmDenormalized\Mapping\Annotation\DnTable;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**

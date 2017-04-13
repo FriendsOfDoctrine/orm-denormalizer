@@ -1,5 +1,5 @@
 <?php
-namespace FOD\DoctrineOrmDenormalized\Mapping\Annotation;
+namespace FOD\OrmDenormalized\Mapping\Annotation;
 
 
 /**

@@ -1,9 +1,9 @@
 <?php
-namespace FOD\DoctrineOrmDenormalized\Listeners;
+namespace FOD\OrmDenormalized\Listeners;
 
 
-use FOD\DoctrineOrmDenormalized\DnTableGroupContainer;
-use FOD\DoctrineOrmDenormalized\DnTableValue;
+use FOD\OrmDenormalized\DnTableGroupContainer;
+use FOD\OrmDenormalized\DnTableValue;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Event\OnFlushEventArgs;

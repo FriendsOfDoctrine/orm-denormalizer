@@ -1,11 +1,11 @@
 <?php
-namespace FOD\DoctrineOrmDenormalized\Listeners;
+namespace FOD\OrmDenormalized\Listeners;
 
 
-use FOD\DoctrineOrmDenormalized\DnTableGroup;
-use FOD\DoctrineOrmDenormalized\DnTableGroupContainer;
-use FOD\DoctrineOrmDenormalized\Mapping\DnClassMetadata;
-use FOD\DoctrineOrmDenormalized\Mapping\DnClassMetadataFactory;
+use FOD\OrmDenormalized\DnTableGroup;
+use FOD\OrmDenormalized\DnTableGroupContainer;
+use FOD\OrmDenormalized\Mapping\DnClassMetadata;
+use FOD\OrmDenormalized\Mapping\DnClassMetadataFactory;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;

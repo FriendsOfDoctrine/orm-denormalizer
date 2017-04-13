@@ -1,9 +1,9 @@
 <?php
 
-namespace FOD\DoctrineOrmDenormalized\Mapping\Driver;
+namespace FOD\OrmDenormalized\Mapping\Driver;
 
-use FOD\DoctrineOrmDenormalized\Mapping\Annotation\DnTable;
-use FOD\DoctrineOrmDenormalized\Mapping\DnClassMetadata;
+use FOD\OrmDenormalized\Mapping\Annotation\DnTable;
+use FOD\OrmDenormalized\Mapping\DnClassMetadata;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping\ClassMetadata;
 

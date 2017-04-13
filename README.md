@@ -2,7 +2,7 @@
 denormalized doctrine ORM entities
 
 ```php
-use FOD\DoctrineOrmDenormalized\Mapping\Annotation as DENORM;
+use FOD\OrmDenormalized\Mapping\Annotation as DENORM;
 ```
 #### <a name="annotation"></a> @DENORM\DnTable
 use this annotation for entity Class
@@ -46,12 +46,12 @@ Optional attributes:
 # app/config/services.yml
     # denormalization table manager (create table)
     fod.denorm.table_manager:
-        class: FOD\DoctrineOrmDenormalized\DnTableManager
+        class: FOD\OrmDenormalized\DnTableManager
         arguments: ['@doctrine.orm.entity_manager']
 
     # load information about All annotated denormalized entities and write to specific connection denormalized data
     fod.denorm.listeners.events_listener:
-        class: FOD\DoctrineOrmDenormalized\Symfony\DnEventsListener
+        class: FOD\OrmDenormalized\Symfony\DnEventsListener
         arguments: ['@annotations.reader']
         tags:
             - {name: doctrine.event_listener, event: onFlush}
@@ -61,7 +61,7 @@ Optional attributes:
     
     # optional service to register symfony console command generate SQL for create denormalized tables
     fod.denorm.command.create_denormalized_tables_command:
-        class: FOD\DoctrineOrmDenormalized\Symfony\Command\CreateDenormalizedTablesCommand
+        class: FOD\OrmDenormalized\Symfony\Command\CreateDenormalizedTablesCommand
         arguments: ['@fod.denorm.table_manager', '@doctrine.orm.entity_manager']
         tags:
             - {name: console.command}

@@ -1,5 +1,5 @@
 <?php
-namespace FOD\DoctrineOrmDenormalized;
+namespace FOD\OrmDenormalized;
 
 
 class DnTableValue

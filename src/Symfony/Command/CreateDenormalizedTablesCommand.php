@@ -1,9 +1,9 @@
 <?php
-namespace FOD\DoctrineOrmDenormalized\Symfony\Command;
+namespace FOD\OrmDenormalized\Symfony\Command;
 
 
-use FOD\DoctrineOrmDenormalized\DnTableGroupContainer;
-use FOD\DoctrineOrmDenormalized\DnTableManager;
+use FOD\OrmDenormalized\DnTableGroupContainer;
+use FOD\OrmDenormalized\DnTableManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\ORM\EntityManager;

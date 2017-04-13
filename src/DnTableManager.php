@@ -1,5 +1,5 @@
 <?php
-namespace FOD\DoctrineOrmDenormalized;
+namespace FOD\OrmDenormalized;
 
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManager;
