@@ -33,7 +33,7 @@ class DSchool
 ```
 Optional attributes:
 
-* `name` - specific table part name in new generated denormalized table
+* `name` - specific part of the table name in the new generated denormalized table
 * `excludeFields` - array of entity field names that will not be processed
 
 
@@ -41,7 +41,7 @@ Optional attributes:
 
 ##### 1. describe the [`@DENORM\DnTable`](#annotation) annotations for entities
 
-##### 2. register service:
+##### 2. register services:
 ```yml
 # app/config/services.yml
     # denormalization table manager (create table)
@@ -70,14 +70,11 @@ Optional attributes:
 
 ```
 
-##### 3. create denormalized tables with console command:
-
-run console command generate SQL for create denormalized tables:
+##### 3. create denormalized tables with a console command:
 
 ```sh
 $ php bin/console fod:denormalized-tables:generate-sql
 ```
-
-\* run console command with parameter `execute` if you want execute showed SQL
+\* run console command with parameter `execute` if you want execute SQL
 
 ##### 4. work with your Entities as usual
