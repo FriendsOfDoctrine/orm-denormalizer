@@ -12,8 +12,6 @@ use Doctrine\DBAL\Connection;
  */
 class DnTableGroup
 {
-    const MAX_NAME_LENGTH = 64;
-
     /**
      * @var array
      */
@@ -140,9 +138,6 @@ class DnTableGroup
     {
         if (!$this->tableName) {
             $this->tableName = strtolower(implode(DnTable::DENORMALIZE_TABLE_DELIMITER, $this->buildTableName()));
-            if (mb_strlen($this->tableName) > self::MAX_NAME_LENGTH) {
-                $this->tableName = hash('md4', $this->tableName);
-            }
         }
 
         return $this->tableName;

@@ -7,8 +7,6 @@ namespace FOD\OrmDenormalizer;
  */
 class DnColumn
 {
-    const MAX_NAME_LENGTH = 64;
-
     /** @var  string */
     protected $name;
     /** @var  string */
@@ -55,9 +53,6 @@ class DnColumn
     {
         if (!$this->columnName) {
             $this->columnName = strtolower($this->name);
-            if (mb_strlen($this->columnName) > self::MAX_NAME_LENGTH) {
-                $this->columnName = hash('md4', $this->columnName);
-            }
         }
         return $this->columnName;
     }
