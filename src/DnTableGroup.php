@@ -5,7 +5,6 @@ namespace FOD\OrmDenormalizer;
 use FOD\OrmDenormalizer\Mapping\Annotation\DnTable;
 use FOD\OrmDenormalizer\Mapping\DnClassMetadata;
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Class DnTableGroup
@@ -13,10 +12,15 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class DnTableGroup
 {
+    const MAX_NAME_LENGTH = 64;
+
     /**
      * @var array
      */
     protected $structureSchema = [];
+
+    /** @var  string */
+    protected $tableName;
 
     /**
      * @var DnColumn[]
@@ -134,21 +138,14 @@ class DnTableGroup
      */
     public function getTableName()
     {
-        $tableName = [];
-
-        foreach ($this->structureSchema as $entityClass => $entityJoins) {
-            if (($classMetadata = $this->getClassMetadataByName($entityClass)) && ($dnClassMetadata = $this->getDnClassMetadataByName($entityClass))) {
-                $tableName[] = $dnClassMetadata->getDnTable()->name ?: $classMetadata->reflClass->getShortName();
-
-                foreach ($entityJoins as $joinKey => $entityJoin) {
-                    if (($classMetadata = $this->getClassMetadataByName($entityJoin)) && ($dnClassMetadata = $this->getDnClassMetadataByName($entityJoin))) {
-                        $tableName[] = $joinKey . DnTable::DENORMALIZE_FIELD_DELIMITER . ($dnClassMetadata->getDnTable()->name ?: $classMetadata->reflClass->getShortName());
-                    }
-                }
+        if (!$this->tableName) {
+            $this->tableName = strtolower(implode(DnTable::DENORMALIZE_TABLE_DELIMITER, $this->buildTableName()));
+            if (mb_strlen($this->tableName) > self::MAX_NAME_LENGTH) {
+                $this->tableName = hash('md4', $this->tableName);
             }
         }
 
-        return strtolower(implode(DnTable::DENORMALIZE_TABLE_DELIMITER, $tableName));
+        return $this->tableName;
     }
 
     /**
@@ -165,17 +162,7 @@ class DnTableGroup
     public function getColumns()
     {
         if (!$this->columns) {
-            foreach ($this->structureSchema as $entityClass => $entityJoins) {
-                if ($classMetadata = $this->getClassMetadataByName($entityClass)) {
-                    $columnPrefix = $classMetadata->getReflectionClass()->getShortName();
-                    $this->getColumnsOfClassMetadata($columnPrefix, $this->getDnClassMetadataByName($entityClass));
-                    foreach ($entityJoins as $joinKey => $entityJoin) {
-                        if ($classMetadata = $this->getClassMetadataByName($entityJoin)) {
-                            $this->getColumnsOfClassMetadata($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $joinKey, $this->getDnClassMetadataByName($entityJoin));
-                        }
-                    }
-                }
-            }
+            $this->buildColumns();
         }
 
         return $this->columns;
@@ -214,26 +201,16 @@ class DnTableGroup
     }
 
     /**
-     * @param string $className
-     *
-     * @return ClassMetadata|null
-     */
-    public function getClassMetadataByName($className)
-    {
-        return $this->getDnClassMetadataByName($className) ? $this->getDnClassMetadataByName($className)->getClassMetadata() : null;
-    }
-
-    /**
-     * @param string $columnPrefix
+     * @param array $columnPrefix
      * @param DnClassMetadata $dnClassMetadata
      *
      * @return $this
      */
-    protected function getColumnsOfClassMetadata($columnPrefix, DnClassMetadata $dnClassMetadata)
+    protected function getColumnsOfClassMetadata(array $columnPrefix, DnClassMetadata $dnClassMetadata)
     {
         foreach ($dnClassMetadata->getClassMetadata()->fieldMappings as $fieldName => $field) {
             if (!in_array($fieldName, (array)$dnClassMetadata->getDnTable()->excludeFields, true)) {
-                $dnColumn = new DnColumn($columnPrefix . DnTable::DENORMALIZE_FIELD_DELIMITER . $fieldName, $field, $dnClassMetadata->getClassMetadata()->name, $fieldName);
+                $dnColumn = new DnColumn(implode(DnTable::DENORMALIZE_FIELD_DELIMITER, array_merge($columnPrefix, [$fieldName])), $field, $dnClassMetadata->getClassMetadata()->name, $fieldName);
                 if (!$this->isSetIndex && isset($field['id']) && $field['id']) {
                     $this->indexes[] = $dnColumn->getName();
                 }
@@ -254,5 +231,59 @@ class DnTableGroup
     protected function getDnClassMetadataByName($className)
     {
         return isset($this->dnClassMetadata[$className]) ? $this->dnClassMetadata[$className] : null;
+    }
+
+    /**
+     * @param array $prefix
+     * @param string $className
+     *
+     * @return array
+     */
+    protected function buildTableName(array $prefix = [], $className = '')
+    {
+        $tableName = [];
+        if (!$className) {
+            $className = current(array_keys($this->structureSchema));
+        }
+
+        if ($dnClassMetadata = $this->getDnClassMetadataByName($className)) {
+            $partTableName = $dnClassMetadata->getDnTable()->name ?: $dnClassMetadata->getClassMetadata()->reflClass->getShortName();
+            $tableName[] = implode(DnTable::DENORMALIZE_FIELD_DELIMITER, array_merge($prefix, [$partTableName]));
+
+            //$prefix[] = $partTableName;
+
+            if (isset($this->structureSchema[$className])) {
+                foreach ($this->structureSchema[$className] as $property => $targetClass) {
+                    $prefix[] = $property;
+                    $tableName = array_merge($tableName, $this->buildTableName($prefix, $targetClass));
+                }
+            }
+        }
+
+        return $tableName;
+    }
+
+    /**
+     * @param array $prefix
+     * @param string $className
+     */
+    protected function buildColumns(array $prefix = [], $className = '')
+    {
+        if (!$className) {
+            $className = current(array_keys($this->structureSchema));
+        }
+
+        if ($dnClassMetadata = $this->getDnClassMetadataByName($className)) {
+            $partTableName = $dnClassMetadata->getDnTable()->name ?: $dnClassMetadata->getClassMetadata()->reflClass->getShortName();
+            $this->getColumnsOfClassMetadata(array_merge($prefix, [$partTableName]), $dnClassMetadata);
+            $prefix[] = $partTableName;
+
+            if (isset($this->structureSchema[$className])) {
+                foreach ($this->structureSchema[$className] as $property => $targetClass) {
+                    $prefix[] = $property;
+                    $this->buildColumns($prefix, $targetClass);
+                }
+            }
+        }
     }
 }

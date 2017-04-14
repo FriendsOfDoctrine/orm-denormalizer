@@ -11,8 +11,8 @@ namespace FOD\OrmDenormalizer\Mapping\Annotation;
 class DnTable implements DnAnnotation
 {
     const CLASSNAME = __CLASS__;
-    const DENORMALIZE_TABLE_DELIMITER = '___';
-    const DENORMALIZE_FIELD_DELIMITER = '__';
+    const DENORMALIZE_TABLE_DELIMITER = '__';
+    const DENORMALIZE_FIELD_DELIMITER = '_';
 
     /**
      * @var string
