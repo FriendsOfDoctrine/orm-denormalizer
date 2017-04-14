@@ -40,6 +40,9 @@ class DnTableGroup
     /** @var DnTableValue[][] */
     protected $dnTableValues = [];
 
+    /** @var array */
+    protected $oneToManyRelation = [];
+
     /**
      * @var array
      */
@@ -50,11 +53,24 @@ class DnTableGroup
      *
      * @param array $structureSchema
      * @param DnClassMetadata[] $dnClassMetadata
+     * @param array $oneToManyRelation
      */
-    public function __construct(array $structureSchema, array $dnClassMetadata)
+    public function __construct(array $structureSchema, array $dnClassMetadata, array $oneToManyRelation)
     {
         $this->structureSchema = $structureSchema;
         $this->dnClassMetadata = $dnClassMetadata;
+
+        foreach (array_reverse($structureSchema) as $schemaKey => $schema) {
+            foreach (array_filter($oneToManyRelation, function ($value) use ($schemaKey) {
+                return in_array($schemaKey, $value, true);
+            }) as $sourceRelation => $relations) {
+                foreach ($relations as $relationKey => $relation) {
+                    if ($schemaKey === $relation) {
+                        $this->oneToManyRelation[$sourceRelation][$relationKey] = $relation;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -103,6 +119,14 @@ class DnTableGroup
     public function getStructureSchema()
     {
         return $this->structureSchema;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOneToManyRelationSchema()
+    {
+        return $this->oneToManyRelation;
     }
 
     /**
@@ -190,6 +214,16 @@ class DnTableGroup
     }
 
     /**
+     * @param string $className
+     *
+     * @return ClassMetadata|null
+     */
+    public function getClassMetadataByName($className)
+    {
+        return $this->getDnClassMetadataByName($className) ? $this->getDnClassMetadataByName($className)->getClassMetadata() : null;
+    }
+
+    /**
      * @param string $columnPrefix
      * @param DnClassMetadata $dnClassMetadata
      *
@@ -210,16 +244,6 @@ class DnTableGroup
         $this->isSetIndex = true;
 
         return $this;
-    }
-
-    /**
-     * @param string $className
-     *
-     * @return ClassMetadata|null
-     */
-    protected function getClassMetadataByName($className)
-    {
-        return $this->getDnClassMetadataByName($className) ? $this->getDnClassMetadataByName($className)->getClassMetadata() : null;
     }
 
     /**

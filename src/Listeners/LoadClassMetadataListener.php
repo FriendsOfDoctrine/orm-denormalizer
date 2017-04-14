@@ -52,6 +52,7 @@ class LoadClassMetadataListener
 
             $group = [];
             $dependsEntities = [];
+            $oneToManyRelations = [];
 
             /** @var ClassMetadata $classMetadata */
             foreach ($this->em->getMetadataFactory()->getAllMetadata() as $classMetadata) {
@@ -65,6 +66,8 @@ class LoadClassMetadataListener
                         /** Many-One */
                         $group[$dnClassMetadata->getClassMetadata()->name][$association['fieldName']] = $association['targetEntity'];
                         $dependsEntities[] = $association['targetEntity'];
+                    } else {
+                        $oneToManyRelations[$association['sourceEntity']][$association['fieldName']] = $association['targetEntity'];
                     }
                 }
             }
@@ -73,7 +76,13 @@ class LoadClassMetadataListener
                 return !in_array($key, $dependsEntities, true);
             }, ARRAY_FILTER_USE_KEY) as $firstEntityName => $mappingEntities) {
                 if (isset($group[$firstEntityName])) {
-                    $this->container->add(new DnTableGroup($this->getEntityGroupSchema($firstEntityName, $group[$firstEntityName], $group), $this->dnClassesMetadata));
+                    $this->container->add(
+                        new DnTableGroup(
+                            $this->getEntityGroupSchema($firstEntityName, $group[$firstEntityName], $group),
+                            $this->dnClassesMetadata,
+                            $oneToManyRelations
+                        )
+                    );
                 }
             }
         }
