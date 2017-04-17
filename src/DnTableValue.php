@@ -48,12 +48,14 @@ class DnTableValue
      */
     protected function getPropertyByName($propertyName)
     {
-        $propertyGetMethod = 'get' . Inflector::ucwords($propertyName);
-        if (method_exists($this->entity, $propertyGetMethod)) {
-            return $this->entity->{$propertyGetMethod}();
-        }
-        if (property_exists($this->entity, $propertyName)) {
-            return $this->entity->{$propertyName};
+        foreach (['get', 'is'] as $methodPrefix) {
+            $propertyGetMethod = $methodPrefix . Inflector::ucwords($propertyName);
+            if (method_exists($this->entity, $propertyGetMethod)) {
+                return $this->entity->{$propertyGetMethod}();
+            }
+            if (property_exists($this->entity, $propertyName)) {
+                return $this->entity->{$propertyName};
+            }
         }
 
         return null;

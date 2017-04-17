@@ -17,6 +17,9 @@ class DnTableGroup
      */
     protected $structureSchema = [];
 
+    /** @var array */
+    protected $recurrentClasses = [];
+
     /** @var  string */
     protected $tableName;
 
@@ -201,7 +204,7 @@ class DnTableGroup
      *
      * @return $this
      */
-    protected function getColumnsOfClassMetadata(array $columnPrefix, DnClassMetadata $dnClassMetadata)
+    protected function addColumnsOfClassMetadata(array $columnPrefix, DnClassMetadata $dnClassMetadata)
     {
         foreach ($dnClassMetadata->getClassMetadata()->fieldMappings as $fieldName => $field) {
             if (!in_array($fieldName, (array)$dnClassMetadata->getDnTable()->excludeFields, true)) {
@@ -239,18 +242,21 @@ class DnTableGroup
         $tableName = [];
         if (!$className) {
             $className = current(array_keys($this->structureSchema));
+            $this->recurrentClasses = [];
         }
 
         if ($dnClassMetadata = $this->getDnClassMetadataByName($className)) {
             $partTableName = $dnClassMetadata->getDnTable()->name ?: $dnClassMetadata->getClassMetadata()->reflClass->getShortName();
             $tableName[] = implode(DnTable::DENORMALIZE_FIELD_DELIMITER, array_merge($prefix, [$partTableName]));
 
-            //$prefix[] = $partTableName;
-
             if (isset($this->structureSchema[$className])) {
                 foreach ($this->structureSchema[$className] as $property => $targetClass) {
-                    $prefix[] = $property;
-                    $tableName = array_merge($tableName, $this->buildTableName($prefix, $targetClass));
+                    if (!isset($this->recurrentClasses[$targetClass][$property])) {
+                        if ($className === $targetClass) {
+                            $this->recurrentClasses[$targetClass][$property] = true;
+                        }
+                        $tableName = array_merge($tableName, $this->buildTableName([$property], $targetClass));
+                    }
                 }
             }
         }
@@ -261,22 +267,28 @@ class DnTableGroup
     /**
      * @param array $prefix
      * @param string $className
+     * @param string $propertyPrefix
      */
-    protected function buildColumns(array $prefix = [], $className = '')
+    protected function buildColumns(array $prefix = [], $className = '', $propertyPrefix = '')
     {
         if (!$className) {
             $className = current(array_keys($this->structureSchema));
+            $this->recurrentClasses = [];
         }
 
         if ($dnClassMetadata = $this->getDnClassMetadataByName($className)) {
             $partTableName = $dnClassMetadata->getDnTable()->name ?: $dnClassMetadata->getClassMetadata()->reflClass->getShortName();
-            $this->getColumnsOfClassMetadata(array_merge($prefix, [$partTableName]), $dnClassMetadata);
+            $this->addColumnsOfClassMetadata(array_merge($prefix, $propertyPrefix ? [$propertyPrefix, $partTableName] : [$partTableName]), $dnClassMetadata);
             $prefix[] = $partTableName;
 
             if (isset($this->structureSchema[$className])) {
                 foreach ($this->structureSchema[$className] as $property => $targetClass) {
-                    $prefix[] = $property;
-                    $this->buildColumns($prefix, $targetClass);
+                    if (!isset($this->recurrentClasses[$targetClass][$property])) {
+                        if ($className === $targetClass) {
+                            $this->recurrentClasses[$targetClass][$property] = true;
+                        }
+                        $this->buildColumns($prefix, $targetClass, $property);
+                    }
                 }
             }
         }

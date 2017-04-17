@@ -51,7 +51,6 @@ class LoadClassMetadataListener
             $this->em = $eventArgs->getEntityManager();
 
             $group = [];
-            $dependsEntities = [];
             $oneToManyRelations = [];
 
             /** @var ClassMetadata $classMetadata */
@@ -63,19 +62,17 @@ class LoadClassMetadataListener
             foreach ($this->dnClassesMetadata as $dnClassMetadata) {
                 foreach ($dnClassMetadata->getClassMetadata()->getAssociationMappings() as $association) {
                     if (!empty($association['joinColumns']) && isset($this->dnClassesMetadata[$association['targetEntity']])) {
-                        /** Many-One */
+                        /** Many-to-One */
                         $group[$dnClassMetadata->getClassMetadata()->name][$association['fieldName']] = $association['targetEntity'];
-                        $dependsEntities[] = $association['targetEntity'];
                     } else {
+                        /** One-to-Many */
                         $oneToManyRelations[$association['sourceEntity']][$association['fieldName']] = $association['targetEntity'];
                     }
                 }
             }
 
-            foreach (array_filter($group, function ($key) use ($dependsEntities) {
-                return !in_array($key, $dependsEntities, true);
-            }, ARRAY_FILTER_USE_KEY) as $firstEntityName => $mappingEntities) {
-                if (isset($group[$firstEntityName])) {
+            foreach ($group as $firstEntityName => $mappingEntities) {
+                if (!isset($oneToManyRelations[$firstEntityName])) {
                     $this->container->add(
                         new DnTableGroup(
                             $this->getEntityGroupSchema($firstEntityName, $group[$firstEntityName], $group),
@@ -100,11 +97,9 @@ class LoadClassMetadataListener
         $relation = [];
 
         foreach ($classRelation as $field => $relationClass) {
-            if ($firstClass !== $relationClass) {
-                $relation[$firstClass][$field] = $relationClass;
-                if (isset($classesRelation[$relationClass])) {
-                    $relation += $this->getEntityGroupSchema($relationClass, $classesRelation[$relationClass], $classesRelation);
-                }
+            $relation[$firstClass][$field] = $relationClass;
+            if ($firstClass !== $relationClass && isset($classesRelation[$relationClass])) {
+                $relation = array_merge($relation, $this->getEntityGroupSchema($relationClass, $classesRelation[$relationClass], $classesRelation));
             }
         }
 
