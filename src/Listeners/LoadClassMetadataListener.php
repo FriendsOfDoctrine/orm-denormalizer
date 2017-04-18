@@ -103,6 +103,6 @@ class LoadClassMetadataListener
             }
         }
 
-        return call_user_func_array('array_merge', $relation);
+        return $relation ? call_user_func_array('array_merge', $relation) : [];
     }
 }

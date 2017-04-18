@@ -3,7 +3,7 @@ denormalize your doctrine ORM entities
 
 ### setup the Symfony 2/3 project:
 
-##### 1. describe the `@DENORM\DnTable` annotations for entities
+##### 1. describe the `@DENORM\Table` annotations for entities
 
 ```php
 use FOD\OrmDenormalizer\Mapping\Annotation as DENORM;

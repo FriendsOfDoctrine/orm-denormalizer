@@ -128,7 +128,7 @@ class WriteToDenormalizedTablesListener
             }
         }
 
-        return call_user_func_array('array_merge', $leadEntities);
+        return $leadEntities ? call_user_func_array('array_merge', $leadEntities) : [];
     }
 
     /**

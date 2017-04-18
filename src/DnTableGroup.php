@@ -279,7 +279,7 @@ class DnTableGroup
             }
         }
 
-        return call_user_func_array('array_merge', $tableName);
+        return $tableName ? call_user_func_array('array_merge', $tableName) : [];
     }
 
     /**
