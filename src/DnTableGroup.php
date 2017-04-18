@@ -265,7 +265,7 @@ class DnTableGroup
 
         if ($dnClassMetadata = $this->getDnClassMetadataByName($className)) {
             $partTableName = $dnClassMetadata->getDnTable()->name ?: $dnClassMetadata->getClassMetadata()->reflClass->getShortName();
-            $tableName[] = implode(Table::DENORMALIZE_FIELD_DELIMITER, array_merge($prefix, [$partTableName]));
+            $tableName[][] = implode(Table::DENORMALIZE_FIELD_DELIMITER, array_merge($prefix, [$partTableName]));
 
             if (isset($this->structureSchema[$className])) {
                 foreach ($this->structureSchema[$className] as $property => $targetClass) {
@@ -273,13 +273,13 @@ class DnTableGroup
                         if ($className === $targetClass) {
                             $this->recurrentClasses[$targetClass][$property] = true;
                         }
-                        $tableName = array_merge($tableName, $this->buildTableName([$property], $targetClass));
+                        $tableName[] = $this->buildTableName([$property], $targetClass);
                     }
                 }
             }
         }
 
-        return $tableName;
+        return call_user_func_array('array_merge', $tableName);
     }
 
     /**

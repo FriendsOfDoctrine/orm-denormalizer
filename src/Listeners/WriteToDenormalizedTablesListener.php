@@ -122,13 +122,13 @@ class WriteToDenormalizedTablesListener
             $getMethod = 'get' . Inflector::ucwords(current(array_keys($dnTableGroup->getOneToManyRelationSchema()[get_class($childrenEntity)])));
             if (method_exists($childrenEntity, $getMethod)) {
                 foreach ($childrenEntity->{$getMethod}() as $entity) {
-                    $leadEntities[] = $entity;
-                    $leadEntities = array_merge($leadEntities, $this->getLeadEntities($entity, $dnTableGroup));
+                    $leadEntities[][] = $entity;
+                    $leadEntities[] = $this->getLeadEntities($entity, $dnTableGroup);
                 }
             }
         }
 
-        return $leadEntities;
+        return call_user_func_array('array_merge', $leadEntities);
     }
 
     /**

@@ -97,12 +97,12 @@ class LoadClassMetadataListener
         $relation = [];
 
         foreach ($classRelation as $field => $relationClass) {
-            $relation[$firstClass][$field] = $relationClass;
+            $relation[][$firstClass][$field] = $relationClass;
             if ($firstClass !== $relationClass && isset($classesRelation[$relationClass])) {
-                $relation = array_merge($relation, $this->getEntityGroupSchema($relationClass, $classesRelation[$relationClass], $classesRelation));
+                $relation[] = $this->getEntityGroupSchema($relationClass, $classesRelation[$relationClass], $classesRelation);
             }
         }
 
-        return $relation;
+        return call_user_func_array('array_merge', $relation);
     }
 }
