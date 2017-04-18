@@ -8,7 +8,7 @@ denormalize your doctrine ORM entities
 ```php
 use FOD\OrmDenormalizer\Mapping\Annotation as DENORM;
 ```
-#### @DENORM\DnTable
+#### @DENORM\Table
 use this annotation for entity Class
 ```php
 /**
@@ -16,7 +16,7 @@ use this annotation for entity Class
  *
  * @ORM\Table(name="denorm_d_building")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\Denorm\DBuildingRepository")
- * @DENORM\DnTable
+ * @DENORM\Table
  */
 class DBuilding
 {
@@ -28,7 +28,7 @@ class DBuilding
  *
  * @ORM\Table(name="denorm_d_school")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\Denorm\DSchoolRepository")
- * @DENORM\DnTable(name="school", excludedFields={"title"})
+ * @DENORM\Table(name="school", excludedFields={"title"})
  */
 class DSchool
 {
@@ -73,8 +73,8 @@ Optional attributes:
 ##### 3. create denormalized tables with a console command:
 
 ```sh
-$ php bin/console fod:denormalized-tables:generate-sql
+$ php bin/console fod:orm-denormalizer:migrations:generate
 ```
-\* run console command with parameter `execute` if you want execute SQL
+\* run console command with parameter `force` if you want execute SQL
 
 ##### 4. work with your Entities as usual

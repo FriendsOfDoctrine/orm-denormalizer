@@ -25,6 +25,9 @@ class DnColumn
      */
     protected $targetPropertyName;
 
+    /** @var string */
+    protected $selfRelatedPropertyName;
+
     /**
      * DnColumn constructor.
      *
@@ -32,14 +35,16 @@ class DnColumn
      * @param array $field
      * @param string $targetEntityClass
      * @param string $targetPropertyName
+     * @param string $selfRelatedPropertyName
      */
-    public function __construct($name, array $field, $targetEntityClass, $targetPropertyName)
+    public function __construct($name, array $field, $targetEntityClass, $targetPropertyName, $selfRelatedPropertyName = null)
     {
         $this->name = $name;
 
         $this->type = isset($field['type']) && !empty($field['type']) ? $field['type'] : 'string';
         $this->targetEntityClass = $targetEntityClass;
         $this->targetPropertyName = $targetPropertyName;
+        $this->selfRelatedPropertyName = $selfRelatedPropertyName;
 
         $this->options = array_filter($field, function ($key) {
             return in_array($key, ['scale', 'length', 'unique', 'nullable', 'precision', 'id'], true);
@@ -87,5 +92,21 @@ class DnColumn
     public function getTargetPropertyName()
     {
         return $this->targetPropertyName;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSelfRelated()
+    {
+        return !empty($this->selfRelatedPropertyName);
+    }
+
+    /**
+     * @return string
+     */
+    public function getSelfRelatedPropertyName()
+    {
+        return $this->selfRelatedPropertyName;
     }
 }

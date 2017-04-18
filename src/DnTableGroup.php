@@ -2,7 +2,7 @@
 namespace FOD\OrmDenormalizer;
 
 
-use FOD\OrmDenormalizer\Mapping\Annotation\DnTable;
+use FOD\OrmDenormalizer\Mapping\Annotation\Table;
 use FOD\OrmDenormalizer\Mapping\DnClassMetadata;
 use Doctrine\DBAL\Connection;
 
@@ -140,7 +140,7 @@ class DnTableGroup
     public function getTableName()
     {
         if (!$this->tableName) {
-            $this->tableName = strtolower(implode(DnTable::DENORMALIZE_TABLE_DELIMITER, $this->buildTableName()));
+            $this->tableName = strtolower(implode(Table::DENORMALIZE_TABLE_DELIMITER, $this->buildTableName()));
         }
 
         return $this->tableName;
@@ -164,6 +164,15 @@ class DnTableGroup
         }
 
         return $this->columns;
+    }
+
+    public function findEmptyColumnByTargetEntityAndProperty($targetEntity, $targetProperty)
+    {
+        return current(array_filter($this->getColumns(), function ($value) use ($targetEntity, $targetProperty) {
+            /** @var DnColumn $value */
+
+            return $value->getTargetPropertyName() === $targetProperty && $value->getTargetEntityClass() === $targetEntity;
+        }));
     }
 
     /**
@@ -208,7 +217,16 @@ class DnTableGroup
     {
         foreach ($dnClassMetadata->getClassMetadata()->fieldMappings as $fieldName => $field) {
             if (!in_array($fieldName, (array)$dnClassMetadata->getDnTable()->excludeFields, true)) {
-                $dnColumn = new DnColumn(implode(DnTable::DENORMALIZE_FIELD_DELIMITER, array_merge($columnPrefix, [$fieldName])), $field, $dnClassMetadata->getClassMetadata()->name, $fieldName);
+                $dnColumn = new DnColumn(
+                    implode(Table::DENORMALIZE_FIELD_DELIMITER, array_merge($columnPrefix, [$fieldName])),
+                    $field,
+                    $dnClassMetadata->getClassMetadata()->name,
+                    $fieldName,
+                    array_reduce($dnClassMetadata->getClassMetadata()->associationMappings, function ($carry, $value) use ($dnClassMetadata) {
+                        $carry = !$carry && $value['targetEntity'] === $dnClassMetadata->getClassMetadata()->name ? $value['fieldName'] : $carry;
+                        return $carry;
+                    })
+                );
                 if (!$this->isSetIndex && isset($field['id']) && $field['id']) {
                     $this->indexes[] = $dnColumn->getName();
                 }
@@ -247,7 +265,7 @@ class DnTableGroup
 
         if ($dnClassMetadata = $this->getDnClassMetadataByName($className)) {
             $partTableName = $dnClassMetadata->getDnTable()->name ?: $dnClassMetadata->getClassMetadata()->reflClass->getShortName();
-            $tableName[] = implode(DnTable::DENORMALIZE_FIELD_DELIMITER, array_merge($prefix, [$partTableName]));
+            $tableName[] = implode(Table::DENORMALIZE_FIELD_DELIMITER, array_merge($prefix, [$partTableName]));
 
             if (isset($this->structureSchema[$className])) {
                 foreach ($this->structureSchema[$className] as $property => $targetClass) {

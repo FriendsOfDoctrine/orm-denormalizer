@@ -8,7 +8,7 @@ namespace FOD\OrmDenormalizer\Mapping\Annotation;
  * @Annotation
  * @Target("CLASS")
  */
-class DnTable implements DnAnnotation
+class Table implements DnAnnotation
 {
     const CLASSNAME = __CLASS__;
     const DENORMALIZE_TABLE_DELIMITER = '__';

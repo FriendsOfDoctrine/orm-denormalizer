@@ -4,6 +4,10 @@ namespace FOD\OrmDenormalizer;
 
 use Doctrine\Common\Util\Inflector;
 
+/**
+ * Class DnTableValue
+ * @package FOD\OrmDenormalizer
+ */
 class DnTableValue
 {
     /** @var  \stdClass */
@@ -48,6 +52,9 @@ class DnTableValue
      */
     protected function getPropertyByName($propertyName)
     {
+        if (null === $this->entity) {
+            return null;
+        }
         foreach (['get', 'is'] as $methodPrefix) {
             $propertyGetMethod = $methodPrefix . Inflector::ucwords($propertyName);
             if (method_exists($this->entity, $propertyGetMethod)) {

@@ -37,9 +37,9 @@ class CreateDenormalizedTablesCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('fod:denormalized-tables:generate-sql')
+            ->setName('fod:orm-denormalizer:migrations:generate')
             ->setDescription('Generate SQL for create denormalized tables')
-            ->addArgument('execute', InputArgument::OPTIONAL, 'Execute showed SQL for create table', false);
+            ->addArgument('force', InputArgument::OPTIONAL, 'Execute showed SQL', false);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -57,7 +57,7 @@ class CreateDenormalizedTablesCommand extends Command
             try {
                 $output->writeln(['SQL:']);
                 $output->writeln('<bg=black;options=bold>' . implode(PHP_EOL, $dnTableGroup->getMigrationSQL($this->connection)) . '</>');
-                if ($input->getArgument('execute')) {
+                if ($input->getArgument('force')) {
                     $this->dnTableManager->createTable($dnTableGroup, $this->connection);
                     $output->writeln('<info>Execute SQL</info>');
                 }

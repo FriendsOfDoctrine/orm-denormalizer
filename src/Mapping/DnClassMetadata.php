@@ -1,7 +1,7 @@
 <?php
 namespace FOD\OrmDenormalizer\Mapping;
 
-use FOD\OrmDenormalizer\Mapping\Annotation\DnTable;
+use FOD\OrmDenormalizer\Mapping\Annotation\Table;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 class DnClassMetadata
 {
     /**
-     * @var DnTable
+     * @var Table
      */
     protected $dnTable;
 
@@ -21,16 +21,16 @@ class DnClassMetadata
      * DnClassMetadata constructor.
      *
      * @param ClassMetadata $classMetadata
-     * @param DnTable $dnTable
+     * @param Table $dnTable
      */
-    protected function __construct(ClassMetadata $classMetadata, DnTable $dnTable)
+    protected function __construct(ClassMetadata $classMetadata, Table $dnTable)
     {
         $this->classMetadata = $classMetadata;
         $this->dnTable = $dnTable;
     }
 
     /**
-     * @return DnTable
+     * @return Table
      */
     public function getDnTable()
     {
@@ -47,11 +47,11 @@ class DnClassMetadata
 
     /**
      * @param ClassMetadata $classMetadata
-     * @param DnTable $dnTable
+     * @param Table $dnTable
      *
      * @return DnClassMetadata
      */
-    public static function create(ClassMetadata $classMetadata, DnTable $dnTable)
+    public static function create(ClassMetadata $classMetadata, Table $dnTable)
     {
         return new self($classMetadata, $dnTable);
     }

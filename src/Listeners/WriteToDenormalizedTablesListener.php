@@ -4,6 +4,7 @@ namespace FOD\OrmDenormalizer\Listeners;
 
 use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\UnitOfWork;
+use FOD\OrmDenormalizer\DnColumn;
 use FOD\OrmDenormalizer\DnTableGroup;
 use FOD\OrmDenormalizer\DnTableGroupContainer;
 use FOD\OrmDenormalizer\DnTableValue;
@@ -65,7 +66,6 @@ class WriteToDenormalizedTablesListener
                 $this->handleEntities($this->getLeadEntities($entity, $dnTableGroup), $uow);
             }
         }
-
         /**
          * UPDATE/INSERT operation of denormalized values
          */
@@ -81,21 +81,28 @@ class WriteToDenormalizedTablesListener
         foreach ($entities as $entity) {
             foreach ($this->dnTableGroupContainer->getByLeadClass(get_class($entity)) as $dnTableGroup) {
                 $relationEntities = [];
+                $selfRelatedProperties = [];
+                /** @var DnColumn[] $emptyColumns */
+                $emptyColumns = [];
                 foreach ($dnTableGroup->getColumns() as $column) {
                     if (get_class($entity) === $column->getTargetEntityClass()) {
+                        if ($column->getSelfRelatedPropertyName() && !isset($selfRelatedProperties[$column->getSelfRelatedPropertyName()][$column->getTargetPropertyName()])) {
+                            $selfRelatedProperties[$column->getSelfRelatedPropertyName()][$column->getTargetPropertyName()] = true;
+                        }
                         $dnTableGroup->addColumnValue(new DnTableValue($column, $entity));
                     } else {
-                        foreach ($dnTableGroup->getStructureSchema() as $schemaEntityKey => $schemaRelation) {
-                            foreach ($schemaRelation as $property => $className) {
-                                $relationEntities[$className] = $uow->getOriginalEntityData(isset($relationEntities[$schemaEntityKey]) ? $relationEntities[$schemaEntityKey] : $entity)[$property];
-                            }
-                        }
+                        $emptyColumns[] = $column;
                     }
                 }
-                foreach ($dnTableGroup->getColumns() as $column) {
-                    if (isset($relationEntities[$column->getTargetEntityClass()])) {
-                        $dnTableGroup->addColumnValue(new DnTableValue($column, $relationEntities[$column->getTargetEntityClass()]));
+
+                foreach ($dnTableGroup->getStructureSchema() as $schemaEntityKey => $schemaRelation) {
+                    foreach ($schemaRelation as $property => $className) {
+                        $relationEntities[$className] = $uow->getOriginalEntityData(isset($relationEntities[$schemaEntityKey]) ? $relationEntities[$schemaEntityKey] : $entity)[$property];
                     }
+                }
+
+                foreach ($emptyColumns as $column) {
+                    $dnTableGroup->addColumnValue(new DnTableValue($column, isset($relationEntities[$column->getTargetEntityClass()]) ? $relationEntities[$column->getTargetEntityClass()] : null));
                 }
             }
         }
@@ -116,7 +123,7 @@ class WriteToDenormalizedTablesListener
             if (method_exists($childrenEntity, $getMethod)) {
                 foreach ($childrenEntity->{$getMethod}() as $entity) {
                     $leadEntities[] = $entity;
-                    $leadEntities += $this->getLeadEntities($entity, $dnTableGroup);
+                    $leadEntities = array_merge($leadEntities, $this->getLeadEntities($entity, $dnTableGroup));
                 }
             }
         }

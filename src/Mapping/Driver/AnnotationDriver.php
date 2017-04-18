@@ -2,7 +2,7 @@
 
 namespace FOD\OrmDenormalizer\Mapping\Driver;
 
-use FOD\OrmDenormalizer\Mapping\Annotation\DnTable;
+use FOD\OrmDenormalizer\Mapping\Annotation\Table;
 use FOD\OrmDenormalizer\Mapping\DnClassMetadata;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -42,8 +42,8 @@ class AnnotationDriver
      */
     public function loadMetadataForClass(ClassMetadata $classMetadata)
     {
-        /** @var DnTable $tableMetadata */
-        if ($tableMetadata = $this->reader->getClassAnnotation($classMetadata->reflClass, DnTable::CLASSNAME)) {
+        /** @var Table $tableMetadata */
+        if ($tableMetadata = $this->reader->getClassAnnotation($classMetadata->reflClass, Table::CLASSNAME)) {
             if (!$tableMetadata->name) {
                 $tableMetadata->name = $classMetadata->reflClass->getShortName();
             }
