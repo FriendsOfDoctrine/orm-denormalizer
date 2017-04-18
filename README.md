@@ -68,6 +68,10 @@ Optional attributes:
         calls:
             - ['setConnection', ['@service_container', 'doctrine.dbal.clickhouse_connection']] # second parameter (string) is service name of doctrine connection
 
+    # optional service for help transform ORM QueryBuilder to denormalize DBAL QueryBuilder
+    fod.denorm.query_builder_transformer:
+        class: FOD\OrmDenormalizer\Symfony\Services\ORMQueryBuilderTransformer
+        arguments: ['@fod.denorm.listeners.events_listener', '@doctrine.orm.entity_manager']
 ```
 
 ##### 3. create denormalized tables with a console command:

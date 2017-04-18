@@ -83,4 +83,12 @@ class DnEventsListener
 
         $this->loadClassMetadataListener->loadClassMetadata($eventArgs);
     }
+
+    /**
+     * @return DnTableGroupContainer
+     */
+    public function getDnTableGroupContainer()
+    {
+        return $this->dnTableGroupContainer;
+    }
 }

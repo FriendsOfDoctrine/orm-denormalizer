@@ -166,7 +166,13 @@ class DnTableGroup
         return $this->columns;
     }
 
-    public function findEmptyColumnByTargetEntityAndProperty($targetEntity, $targetProperty)
+    /**
+     * @param $targetEntity
+     * @param $targetProperty
+     *
+     * @return DnColumn
+     */
+    public function findColumnByTargetEntityAndProperty($targetEntity, $targetProperty)
     {
         return current(array_filter($this->getColumns(), function ($value) use ($targetEntity, $targetProperty) {
             /** @var DnColumn $value */
