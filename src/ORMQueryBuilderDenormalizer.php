@@ -15,7 +15,6 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\Expression\CompositeExpression;
-use FOD\OrmDenormalizer\DnTableGroup;
 
 /**
  * Class ORMQueryBuilderDenormalizer
@@ -97,20 +96,28 @@ class ORMQueryBuilderDenormalizer
         foreach ($this->queryBuilder->getDQLPart('join') as $joins) {
             /** @var Join $join */
             foreach ($joins as $join) {
-                list($joinAlias, $joinProperty) = explode('.', $join->getJoin());
 
-                if (isset($this->entityAliases[$joinAlias], $this->dnTableGroup->getStructureSchema()[$this->entityAliases[$joinAlias]], $this->dnTableGroup->getStructureSchema()[$this->entityAliases[$joinAlias]][$joinProperty])) {
-                    $this->entityAliases[$join->getAlias()] = $this->dnTableGroup->getStructureSchema()[$this->entityAliases[$joinAlias]][$joinProperty];
-                } else {
-                    throw new \Exception($this->entityAliases[$joinAlias] . ' not in schema table ' . $this->dnTableGroup->getTableName());
+                $splitJoin = explode('.', $join->getJoin());
+
+                if (count($splitJoin) === 2) {
+                    list($joinAlias, $joinProperty) = $splitJoin;
+                    if (isset($this->entityAliases[$joinAlias], $this->dnTableGroup->getStructureSchema()[$this->entityAliases[$joinAlias]], $this->dnTableGroup->getStructureSchema()[$this->entityAliases[$joinAlias]][$joinProperty])) {
+                        $this->entityAliases[$join->getAlias()] = $this->dnTableGroup->getStructureSchema()[$this->entityAliases[$joinAlias]][$joinProperty];
+                    } else {
+                        throw new \Exception($this->entityAliases[$joinAlias] . ' not in schema table ' . $this->dnTableGroup->getTableName());
+                    }
+                } elseif (count($splitJoin) === 1) {
+                    $this->entityAliases[$join->getAlias()] = $join->getJoin();
                 }
             }
         }
 
-        $entityAliases = array_flip($this->entityAliases);
-
-        foreach ($this->dnTableGroup->getColumns() as $dnColumn) {
-            $this->aliasesReplacedMap[$entityAliases[$dnColumn->getTargetEntityClass()] . '.' . $dnColumn->getTargetPropertyName()] = $dnColumn->getName();
+        foreach (array_flip($this->entityAliases) as $className => $entityAlias) {
+            foreach ($this->dnTableGroup->getColumns() as $dnColumn) {
+                if ($dnColumn->getTargetEntityClass() === $className) {
+                    $this->aliasesReplacedMap[$entityAlias . '.' . $dnColumn->getTargetPropertyName()] = $dnColumn->getName();
+                }
+            }
         }
 
         return $this;
