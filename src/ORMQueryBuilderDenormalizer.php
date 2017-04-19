@@ -106,7 +106,7 @@ class ORMQueryBuilderDenormalizer
                     } else {
                         throw new \Exception($this->entityAliases[$joinAlias] . ' not in schema table ' . $this->dnTableGroup->getTableName());
                     }
-                } elseif (count($splitJoin) === 1) {
+                } else {
                     $this->entityAliases[$join->getAlias()] = $join->getJoin();
                 }
             }
