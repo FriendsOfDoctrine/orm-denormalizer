@@ -1,4 +1,12 @@
 <?php
+/**
+ *  This file is part of the FOD\OrmDenormalizer package -- Denormalizer ORM Doctrine library
+ *
+ *  (c) FriendsOfDoctrine <https://github.com/FriendsOfDoctrine/>.
+ *
+ *  For the full copyright and license inflormation, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
 namespace FOD\OrmDenormalizer\Mapping\Driver;
 
@@ -9,6 +17,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * This class provides method to load metadata from class annotations.
+ * @package FOD\OrmDenormalizer\Mapping\Driver
+ * @author Nikolay Mitrofanov <mitrofanovnk@gmail.com>
  */
 class AnnotationDriver
 {

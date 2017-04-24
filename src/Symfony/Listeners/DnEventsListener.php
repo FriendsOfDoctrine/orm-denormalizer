@@ -1,6 +1,14 @@
 <?php
-namespace FOD\OrmDenormalizer\Symfony\Listeners;
+/**
+ *  This file is part of the FOD\OrmDenormalizer package -- Denormalizer ORM Doctrine library
+ *
+ *  (c) FriendsOfDoctrine <https://github.com/FriendsOfDoctrine/>.
+ *
+ *  For the full copyright and license inflormation, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
+namespace FOD\OrmDenormalizer\Symfony\Listeners;
 
 use FOD\OrmDenormalizer\DnTableGroupContainer;
 use FOD\OrmDenormalizer\Listeners\LoadClassMetadataListener;
@@ -12,8 +20,9 @@ use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class DnEventListener
- * @package AppBundle\EventListener
+ * Class DnEventsListener
+ * @package FOD\OrmDenormalizer\Symfony\Listeners
+ * @author Nikolay Mitrofanov <mitrofanovnk@gmail.com>
  */
 class DnEventsListener
 {

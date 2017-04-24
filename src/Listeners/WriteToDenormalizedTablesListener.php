@@ -1,6 +1,14 @@
 <?php
-namespace FOD\OrmDenormalizer\Listeners;
+/**
+ *  This file is part of the FOD\OrmDenormalizer package -- Denormalizer ORM Doctrine library
+ *
+ *  (c) FriendsOfDoctrine <https://github.com/FriendsOfDoctrine/>.
+ *
+ *  For the full copyright and license inflormation, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
+namespace FOD\OrmDenormalizer\Listeners;
 
 use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\UnitOfWork;
@@ -12,9 +20,11 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 
+
 /**
  * Class WriteToDenormalizedTablesListener
- * @package AppBundle\EventListener
+ * @package FOD\OrmDenormalizer\Listeners
+ * @author Nikolay Mitrofanov <mitrofanovnk@gmail.com>
  */
 class WriteToDenormalizedTablesListener
 {

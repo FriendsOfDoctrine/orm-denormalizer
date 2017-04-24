@@ -1,6 +1,14 @@
 <?php
-namespace FOD\OrmDenormalizer\Symfony\Services;
+/**
+ *  This file is part of the FOD\OrmDenormalizer package -- Denormalizer ORM Doctrine library
+ *
+ *  (c) FriendsOfDoctrine <https://github.com/FriendsOfDoctrine/>.
+ *
+ *  For the full copyright and license inflormation, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
+namespace FOD\OrmDenormalizer\Symfony\Services;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
@@ -12,6 +20,7 @@ use FOD\OrmDenormalizer\ORMQueryBuilderDenormalizer;
 /**
  * Class ORMQueryBuilderTransformer
  * @package FOD\OrmDenormalizer\Symfony\Services
+ * @author Nikolay Mitrofanov <mitrofanovnk@gmail.com>
  */
 class ORMQueryBuilderTransformer
 {

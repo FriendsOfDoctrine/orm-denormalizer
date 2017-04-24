@@ -1,6 +1,14 @@
 <?php
-namespace FOD\OrmDenormalizer\Symfony\Command;
+/**
+ *  This file is part of the FOD\OrmDenormalizer package -- Denormalizer ORM Doctrine library
+ *
+ *  (c) FriendsOfDoctrine <https://github.com/FriendsOfDoctrine/>.
+ *
+ *  For the full copyright and license inflormation, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
 
+namespace FOD\OrmDenormalizer\Symfony\Command;
 
 use FOD\OrmDenormalizer\DnTableGroupContainer;
 use FOD\OrmDenormalizer\DnTableManager;
@@ -14,6 +22,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class CreateDenormalizedTablesCommand
+ * @package FOD\OrmDenormalizer\Symfony\Command
+ * @author Nikolay Mitrofanov <mitrofanovnk@gmail.com>
+ */
 class CreateDenormalizedTablesCommand extends Command
 {
     /** @var  DnTableManager */

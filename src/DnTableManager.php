@@ -1,4 +1,13 @@
 <?php
+/**
+ *  This file is part of the FOD\OrmDenormalizer package -- Denormalizer ORM Doctrine library
+ *
+ *  (c) FriendsOfDoctrine <https://github.com/FriendsOfDoctrine/>.
+ *
+ *  For the full copyright and license inflormation, please view the LICENSE
+ *  file that was distributed with this source code.
+ */
+
 namespace FOD\OrmDenormalizer;
 
 use Doctrine\DBAL\Driver\Connection;
@@ -6,7 +15,8 @@ use Doctrine\ORM\EntityManager;
 
 /**
  * Class DnTableManager
- * @package AppBundle\DenormalizedOrm
+ * @package FOD\OrmDenormalizer
+ * @author Nikolay Mitrofanov <mitrofanovnk@gmail.com>
  */
 class DnTableManager
 {
