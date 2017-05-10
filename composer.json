@@ -16,5 +16,8 @@
         "psr-4": {
             "FOD\\OrmDenormalizer\\": "src/"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.1"
     }
 }
