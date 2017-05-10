@@ -79,6 +79,6 @@ Optional attributes:
 ```sh
 $ php bin/console fod:orm-denormalizer:migrations:generate
 ```
-\* run console command with parameter `force` if you want execute SQL
+\* run console command with option `--force` if you want to execute generated SQL
 
 ##### 4. work with your Entities as usual
