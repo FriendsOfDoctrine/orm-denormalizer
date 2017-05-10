@@ -184,10 +184,26 @@ class DnTableGroup
     public function findColumnByTargetEntityAndProperty($targetEntity, $targetProperty)
     {
         return current(array_filter($this->getColumns(), function ($value) use ($targetEntity, $targetProperty) {
-            /** @var DnColumn $value */
-
-            return $value->getTargetPropertyName() === $targetProperty && $value->getTargetEntityClass() === $targetEntity;
+            /** @var DnColumn $column */
+            return $column->getTargetPropertyName() === $targetProperty && $column->getTargetEntityClass() === $targetEntity;
         }));
+    }
+
+    /**
+     * @param $targetEntity
+     * @param $targetProperty
+     *
+     * @return null|string
+     */
+    public function getColumnNameByTargetEntityAndProperty($targetEntity, $targetProperty)
+    {
+        foreach ($this->getColumns() as $columnName => $column) {
+            if ($column->getTargetPropertyName() === $targetProperty && $column->getTargetEntityClass() === $targetEntity) {
+                return $columnName;
+            }
+        }
+
+        return null;
     }
 
     /**

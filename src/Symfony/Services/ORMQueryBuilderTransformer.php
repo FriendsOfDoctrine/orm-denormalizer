@@ -57,13 +57,11 @@ class ORMQueryBuilderTransformer
         }
 
         foreach ($queryBuilder->getRootEntities() as $entityIndex => $rootEntity) {
-            foreach ($this->dnEventListener->getDnTableGroupContainer()->getByLeadClass($this->em->getClassMetadata($rootEntity)->getName()) as $dnTableGroup) {
-                return (new ORMQueryBuilderDenormalizer($queryBuilder, $dnTableGroup, $this->em->getMetadataFactory()))->translate($connection);
+            foreach ($this->dnEventListener->getDnTableGroupContainer()->getByContainClass($this->em->getClassMetadata($rootEntity)->getName()) as $dnTableGroup) {
+                return (new ORMQueryBuilderDenormalizer($queryBuilder, $dnTableGroup, $this->em))->translate($connection);
             }
         }
 
         return null;
     }
-
-
 }

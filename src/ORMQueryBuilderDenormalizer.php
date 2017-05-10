@@ -11,7 +11,8 @@
 namespace FOD\OrmDenormalizer;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Composite;
 use Doctrine\ORM\Query\Expr\From;
 use Doctrine\ORM\Query\Expr\GroupBy;
@@ -19,6 +20,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Expr\OrderBy;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\Query\Expr\Select;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
 use Doctrine\DBAL\Connection;
@@ -45,20 +47,24 @@ class ORMQueryBuilderDenormalizer
     /** @var  QueryBuilder */
     protected $queryBuilder;
 
+    /** @var  EntityManager */
+    protected $em;
+
     /**
      * DenormalizedQueryBuilder constructor.
      *
      * @param QueryBuilder $queryBuilder
      * @param DnTableGroup $dnTableGroup
-     * @param ClassMetadataFactory $classMetadataFactory
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(QueryBuilder $queryBuilder, DnTableGroup $dnTableGroup, ClassMetadataFactory $classMetadataFactory)
+    public function __construct(QueryBuilder $queryBuilder, DnTableGroup $dnTableGroup, EntityManagerInterface $entityManager)
     {
         $this->queryBuilder = $queryBuilder;
         $this->dnTableGroup = $dnTableGroup;
+        $this->em = $entityManager;
 
         foreach ($queryBuilder->getRootEntities() as $entityIndex => $rootEntity) {
-            $this->entityClassMapping[$rootEntity] = $classMetadataFactory->getMetadataFor($rootEntity)->getName();
+            $this->entityClassMapping[$rootEntity] = $entityManager->getMetadataFactory()->getMetadataFor($rootEntity)->getName();
             $this->entityClassTableMapping[$this->entityClassMapping[$rootEntity]] = $dnTableGroup->getTableName();
             $this->entityAliases[$queryBuilder->getRootAliases()[$entityIndex]] = $this->entityClassMapping[$rootEntity];
         }
@@ -73,6 +79,14 @@ class ORMQueryBuilderDenormalizer
      */
     public function translate(Connection $connection)
     {
+        /** @var From $from */
+        foreach ($this->queryBuilder->getDQLPart('from') as $from) {
+            foreach ($this->em->getClassMetadata($from->getFrom())->associationMappings as $associationMapping) {
+                foreach ($this->em->getClassMetadata($associationMapping['targetEntity'])->getIdentifierColumnNames() as $columnName) {
+                    $this->aliasesReplacedMap[$from->getAlias() . '.' . $associationMapping['fieldName']] = $this->dnTableGroup->getColumnNameByTargetEntityAndProperty($associationMapping['targetEntity'], $columnName);
+                }
+            }
+        }
         $target = $connection->createQueryBuilder();
         foreach ($this->queryBuilder->getDQLParts() as $name => $dqlPart) {
             if (!$dqlPart) {
@@ -202,9 +216,10 @@ class ORMQueryBuilderDenormalizer
     {
         $params = [];
         $paramTypes = [];
+        /** @var Parameter $parameter */
         foreach ($ormParameters as $parameter) {
             $params[$parameter->getName()] = $parameter->getValue();
-            $paramTypes[$parameter->getName()] = $parameter->getType();
+            $paramTypes[$parameter->getName()] = Connection::PARAM_STR_ARRAY === $parameter->getType() && false !== filter_var(current($parameter->getValue()), FILTER_VALIDATE_INT) ? Connection::PARAM_INT_ARRAY : $parameter->getType();
         }
         return ['params' => $params, 'paramTypes' => $paramTypes];
     }
