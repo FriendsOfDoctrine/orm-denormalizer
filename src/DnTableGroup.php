@@ -10,6 +10,7 @@
 
 namespace FOD\OrmDenormalizer;
 
+use Doctrine\DBAL\Types\Type;
 use FOD\OrmDenormalizer\Mapping\Annotation\Table;
 use FOD\OrmDenormalizer\Mapping\DnClassMetadata;
 use Doctrine\DBAL\Connection;
@@ -50,6 +51,9 @@ class DnTableGroup
      * @var bool
      */
     protected $isSetIndex = false;
+
+    /** @var  string */
+    protected $eventTimeIndex;
 
     /** @var DnTableValue[][] */
     protected $dnTableValues = [];
@@ -235,6 +239,10 @@ class DnTableGroup
             $newTable->setPrimaryKey($this->getIndexes());
         }
 
+        if (null !== $this->eventTimeIndex) {
+            $newTable->addOption('eventDateProviderColumn', $this->eventTimeIndex);
+        }
+
         return $fromSchema->getMigrateToSql($toSchema, $connection->getDatabasePlatform());
     }
 
@@ -260,6 +268,9 @@ class DnTableGroup
                 );
                 if (!$this->isSetIndex && isset($field['id']) && $field['id']) {
                     $this->indexes[] = $dnColumn->getName();
+                }
+                if (null === $this->eventTimeIndex && Type::DATETIME === $field['type']) {
+                    $this->eventTimeIndex = $dnColumn->getName();
                 }
                 $this->columns[$dnColumn->getName()] = $dnColumn;
             }
